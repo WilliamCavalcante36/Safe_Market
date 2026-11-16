@@ -1,0 +1,296 @@
+
+/* =====================================================
+   SAFEMARKET — CONFIGURAÇÕES
+   Identidade visual: grafite, off-white e laranja
+===================================================== */
+
+/* Variáveis locais */
+main.conteudo {
+    --config-laranja: #E87524;
+    --config-grafite: #292929;
+    --config-texto: #343434;
+    --config-secundario: #777777;
+    --config-fundo: #FFFFFF;
+    --config-borda: #EAE6E1;
+}
+
+/* =====================================================
+   CABEÇALHO
+===================================================== */
+
+main.conteudo > header {
+    margin-bottom: 30px;
+}
+
+main.conteudo > header h1 {
+    color: var(--config-grafite);
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+main.conteudo .descricao-pagina {
+    color: var(--config-secundario);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   SEÇÃO DE CONFIGURAÇÕES
+===================================================== */
+
+main.conteudo > section.atividades {
+    background: var(--config-fundo);
+    border: 1px solid var(--config-borda);
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 4px 18px rgba(35, 30, 25, 0.04);
+}
+
+main.conteudo > section.atividades > h2 {
+    color: var(--config-grafite);
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0 0 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--config-borda);
+}
+
+/* =====================================================
+   FORMULÁRIO
+===================================================== */
+
+#form-configuracoes {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* =====================================================
+   OPÇÕES DE CONFIGURAÇÃO
+===================================================== */
+
+#form-configuracoes .atividade {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 23px 4px;
+    border-bottom: 1px solid var(--config-borda);
+    background: transparent;
+    border-radius: 0;
+    transition: background 0.2s ease;
+}
+
+#form-configuracoes .atividade:hover {
+    background: #FCFAF8;
+}
+
+#form-configuracoes .atividade > div {
+    flex: 1;
+    min-width: 0;
+}
+
+#form-configuracoes .atividade > div p {
+    color: var(--config-grafite);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 6px;
+}
+
+#form-configuracoes .atividade > div span {
+    display: block;
+    color: var(--config-secundario);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* =====================================================
+   INTERRUPTORES
+===================================================== */
+
+#form-configuracoes .atividade label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    color: var(--config-texto);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#form-configuracoes .atividade input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+    margin: 0;
+    background: #D8D5D1;
+    border: 1px solid #C9C5C0;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+#form-configuracoes .atividade input[type="checkbox"]::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    background: #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease;
+}
+
+#form-configuracoes .atividade input[type="checkbox"]:checked {
+    background: var(--config-laranja);
+    border-color: var(--config-laranja);
+}
+
+#form-configuracoes .atividade input[type="checkbox"]:checked::before {
+    transform: translateX(20px);
+}
+
+#form-configuracoes .atividade input[type="checkbox"]:focus-visible {
+    outline: 3px solid rgba(232, 117, 36, 0.25);
+    outline-offset: 3px;
+}
+
+/* =====================================================
+   LINK DE PERMISSÕES
+===================================================== */
+
+#form-configuracoes .atividade > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 9px 15px;
+    border: 1px solid rgba(232, 117, 36, 0.4);
+    border-radius: 7px;
+    color: var(--config-laranja);
+    background: #FFF9F4;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease,
+                border-color 0.2s ease;
+}
+
+#form-configuracoes .atividade > a:hover {
+    color: #FFFFFF;
+    background: var(--config-laranja);
+    border-color: var(--config-laranja);
+}
+
+#form-configuracoes .atividade > a:focus-visible {
+    outline: 3px solid rgba(232, 117, 36, 0.25);
+    outline-offset: 3px;
+}
+
+/* =====================================================
+   BOTÃO SALVAR
+===================================================== */
+
+#form-configuracoes .bnt-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    min-height: 44px;
+    margin-top: 25px;
+    padding: 12px 24px;
+    border: 1px solid var(--config-laranja);
+    border-radius: 8px;
+    background: var(--config-laranja);
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+#form-configuracoes .bnt-login:hover {
+    background: #D76519;
+    border-color: #D76519;
+    box-shadow: 0 4px 12px rgba(232, 117, 36, 0.2);
+}
+
+#form-configuracoes .bnt-login:active {
+    transform: translateY(1px);
+}
+
+#form-configuracoes .bnt-login:focus-visible {
+    outline: 3px solid rgba(232, 117, 36, 0.25);
+    outline-offset: 3px;
+}
+
+/* =====================================================
+   MENSAGEM DE RETORNO
+===================================================== */
+
+#mensagem-configuracoes {
+    display: block;
+    margin: 16px 0 0;
+    padding: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 600;
+}
+
+#mensagem-configuracoes:empty {
+    display: none;
+}
+
+/* =====================================================
+   RESPONSIVIDADE
+===================================================== */
+
+@media (max-width: 768px) {
+    main.conteudo > section.atividades {
+        padding: 22px 18px;
+    }
+
+    #form-configuracoes .atividade {
+        gap: 16px;
+    }
+}
+
+@media (max-width: 520px) {
+    main.conteudo > header h1 {
+        font-size: 24px;
+    }
+
+    main.conteudo > section.atividades {
+        padding: 20px 15px;
+    }
+
+    #form-configuracoes .atividade {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+        padding: 20px 2px;
+    }
+
+    #form-configuracoes .atividade label {
+        align-self: flex-start;
+    }
+
+    #form-configuracoes .atividade > a {
+        align-self: flex-start;
+    }
+
+    #form-configuracoes .bnt-login {
+        width: 100%;
+    }
+}

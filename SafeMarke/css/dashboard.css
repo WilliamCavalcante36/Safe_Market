@@ -1,0 +1,162 @@
+
+/* =========================================================
+   SAFEMARKET — IDENTIDADE VISUAL GLOBAL
+   Arquivo: css/dashboard.css
+========================================================= */
+
+:root {
+
+    /* IDENTIDADE PRINCIPAL */
+    --sm-azul-marinho: #111B3A;
+    --sm-azul-ciano: #00B8D9;
+    --sm-azul-botao: #007F99;
+    --sm-azul-hover: #006D83;
+
+    /* VARIAÇÕES */
+    --sm-azul-claro: #E5F8FC;
+    --sm-azul-suave: #F0FAFC;
+    --sm-azul-borda: #BCEAF2;
+
+    /* FUNDOS */
+    --sm-fundo: #F3F6FA;
+    --sm-branco: #FFFFFF;
+    --sm-superficie: #FFFFFF;
+    --sm-superficie-secundaria: #F7F9FC;
+
+    --sm-fundo-menu: #111B3A;
+    --sm-fundo-menu-hover: #1C2B50;
+
+    /* TEXTOS */
+    --sm-texto: #263548;
+    --sm-texto-principal: #263548;
+    --sm-secundario: #718096;
+    --sm-texto-claro: #8A98A9;
+
+    --sm-texto-menu: #FFFFFF;
+    --sm-texto-menu-secundario: #B8C5D9;
+
+    /* BORDAS */
+    --sm-borda: #DCE3EB;
+    --sm-borda-forte: #C8D3DF;
+    --sm-divisor: #E8EDF3;
+
+    /* ESTADOS */
+    --sm-sucesso: #16834C;
+    --sm-sucesso-fundo: #E5F5EC;
+    --sm-sucesso-borda: #B8E3C9;
+
+    --sm-alerta: #B7791F;
+    --sm-alerta-fundo: #FFF5DF;
+    --sm-alerta-borda: #F0D69D;
+
+    --sm-erro: #C83D3D;
+    --sm-erro-fundo: #FCEAEA;
+    --sm-erro-borda: #F1C4C4;
+
+    --sm-info: #007F99;
+    --sm-info-fundo: #E5F8FC;
+    --sm-info-borda: #BCEAF2;
+
+    /* SOMBRAS */
+    --sm-sombra-leve:
+        0 2px 8px rgba(17, 27, 58, 0.05);
+
+    --sm-sombra-card:
+        0 5px 18px rgba(17, 27, 58, 0.07);
+
+    --sm-sombra-menu:
+        3px 0 15px rgba(17, 27, 58, 0.08);
+
+    --sm-sombra-destaque:
+        0 5px 15px rgba(0, 184, 217, 0.12);
+
+    /* ARREDONDAMENTOS */
+    --sm-raio-pequeno: 6px;
+    --sm-raio: 10px;
+    --sm-raio-medio: 14px;
+    --sm-raio-grande: 18px;
+    --sm-raio-redondo: 50%;
+
+    /* TRANSIÇÕES */
+    --sm-transicao-rapida: 0.15s ease;
+    --sm-transicao: 0.2s ease;
+    --sm-transicao-lenta: 0.3s ease;
+
+    /* MENU */
+    --sm-menu-largura: 235px;
+    --sm-menu-recolhido: 76px;
+
+    /* ESPAÇAMENTO */
+    --sm-espacamento: 20px;
+
+    /* TIPOGRAFIA */
+    --sm-fonte:
+        "Inter",
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+/* RESET GLOBAL */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    scroll-behavior: smooth;
+    scrollbar-color: var(--sm-borda-forte) var(--sm-fundo);
+    scrollbar-width: thin;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--sm-fundo);
+    color: var(--sm-texto);
+    font-family: var(--sm-fonte);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* SELEÇÃO */
+
+::selection {
+    background: var(--sm-azul-ciano);
+    color: var(--sm-azul-marinho);
+}
+
+/* ACESSIBILIDADE */
+
+:focus-visible {
+    outline: 2px solid var(--sm-azul-ciano);
+    outline-offset: 3px;
+}
+
+/* MOVIMENTO REDUZIDO */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

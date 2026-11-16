@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#111B3A">
+
+    <title>SafeMarket | Entrar</title>
+
+    <!-- Estilos compartilhados -->
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Estilos exclusivos do login -->
+    <link rel="stylesheet" href="../css/login.css">
+
+    <!-- Biblioteca de ícones -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="pagina-login">
+
+    <main class="login-card">
+
+        <!-- Identidade visual -->
+        <header class="login-cabecalho">
+
+            <div class="logo-container">
+                <div class="logo-glass">
+                    <img
+                        src="../imagem/logo.png"
+                        alt="Logo SafeMarket"
+                    >
+                </div>
+            </div>
+
+            <h1>Bem-vindo de volta!</h1>
+
+            <p class="login-subtitulo">
+                Acesse sua conta para continuar
+            </p>
+
+        </header>
+
+        <!-- Formulário de autenticação -->
+        <form id="form-login" autocomplete="on">
+
+            <!-- E-mail -->
+            <div class="grupo-campo">
+
+                <label for="email">
+                    E-mail
+                </label>
+
+                <div class="input-com-icone">
+
+                    <i
+                        data-lucide="mail"
+                        class="icone"
+                        aria-hidden="true">
+                    </i>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Digite seu e-mail"
+                        autocomplete="email"
+                        aria-label="E-mail"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+            <!-- Senha -->
+            <div class="grupo-campo">
+
+                <label for="senha">
+                    Senha
+                </label>
+
+                <div class="input-com-icone">
+
+                    <i
+                        data-lucide="lock-keyhole"
+                        class="icone"
+                        aria-hidden="true">
+                    </i>
+
+                    <input
+                        type="password"
+                        id="senha"
+                        name="senha"
+                        placeholder="Digite sua senha"
+                        autocomplete="current-password"
+                        aria-label="Senha"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+            <!-- Botão de autenticação -->
+            <button class="bnt-login" type="submit">
+
+                <span>Entrar</span>
+
+                <i
+                    data-lucide="arrow-right"
+                    aria-hidden="true">
+                </i>
+
+            </button>
+
+            <!-- Mensagens de autenticação -->
+            <div
+                id="mensagem-login"
+                role="status"
+                aria-live="polite">
+            </div>
+
+        </form>
+
+        <!-- Recuperação de senha -->
+        <nav
+            class="links-recuperacao"
+            aria-label="Opções da conta">
+
+            <a href="recuperar-senha.html">
+                Esqueci minha senha
+            </a>
+
+        </nav>
+
+        <!-- Rodapé -->
+        <footer class="login-rodape">
+            <span>SafeMarket</span>
+            <span>Ambiente de acesso seguro</span>
+        </footer>
+
+    </main>
+
+    <!-- Inicialização dos ícones -->
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <!-- Scripts do sistema -->
+    <script src="../js/api.js"></script>
+    <script src="../js/login.js"></script>
+
+</body>
+</html>

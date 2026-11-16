@@ -1,0 +1,6 @@
+"use strict";
+const itens=document.getElementById('itens'),total=document.getElementById('total'),msg=document.getElementById('mensagem'),pedidos=document.getElementById('pedidos');
+const dinheiro=v=>Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+async function atualizar(){try{const dados=await requisicaoAPI('/carrinho');itens.replaceChildren();let soma=0;for(const i of dados){soma+=Number(i.subtotal);const art=document.createElement('article');const t=document.createElement('span');t.textContent=`${i.nome} — ${i.quantidade} x ${dinheiro(i.preco)} = ${dinheiro(i.subtotal)}`;const b=document.createElement('button');b.textContent='Remover';b.onclick=async()=>{await requisicaoAPI('/carrinho/'+i.produtoId,{method:'DELETE'});atualizar();};art.append(t,b);itens.append(art);}total.textContent='Total: '+dinheiro(soma);const lista=await requisicaoAPI('/pedidos');pedidos.replaceChildren();for(const p of lista){const a=document.createElement('p');a.textContent=`Pedido #${p.id} — ${p.status} — ${dinheiro(p.total)}`;pedidos.append(a);}}catch(e){msg.textContent=e.message;}}
+document.getElementById('finalizar').onclick=async()=>{try{const p=await requisicaoAPI('/pedidos',{method:'POST'});msg.textContent='Pedido #'+p.id+' confirmado! Pagamento simulado.';atualizar();}catch(e){msg.textContent=e.message;}};
+atualizar();

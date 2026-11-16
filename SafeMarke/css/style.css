@@ -1,0 +1,363 @@
+
+/* =========================================================
+   SAFEMARKET — ESTILIZAÇÃO GLOBAL
+   Arquivo: css/style.css
+========================================================= */
+
+
+/* =========================================================
+   1. VARIÁVEIS GLOBAIS
+========================================================= */
+
+:root {
+    /* Identidade visual */
+    --sm-azul-marinho: #111B3A;
+    --sm-azul-ciano: #00B8D9;
+    --sm-azul-botao: #007F99;
+    --sm-azul-hover: #006D83;
+
+    /* Superfícies */
+    --sm-fundo: #F2F5F8;
+    --sm-superficie: #FFFFFF;
+    --sm-superficie-secundaria: #F5F7FA;
+
+    /* Textos */
+    --sm-texto: #263447;
+    --sm-texto-secundario: #64748B;
+    --sm-branco: #FFFFFF;
+
+    /* Bordas e sombras */
+    --sm-borda: #DCE3EA;
+    --sm-sombra-leve: 0 4px 15px rgba(17, 27, 58, 0.06);
+
+    /* Menu */
+    --sm-menu-largura: 250px;
+    --sm-menu-recolhido: 76px;
+    --sm-fundo-menu: #111B3A;
+    --sm-texto-menu: #FFFFFF;
+    --sm-texto-menu-secundario: #B8C5D9;
+    --sm-fundo-menu-hover: rgba(0, 184, 217, 0.14);
+    --sm-sombra-menu: 3px 0 18px rgba(17, 27, 58, 0.12);
+
+    /* Transições */
+    --sm-transicao: 0.25s ease;
+    --sm-transicao-rapida: 0.18s ease;
+
+    /* Bordas arredondadas */
+    --sm-raio: 10px;
+    --sm-raio-medio: 12px;
+    --sm-raio-grande: 18px;
+
+    /* Compatibilidade com estilos anteriores de autenticação */
+    --fundo: #C9D1D5;
+    --fundo-secundario: #D8DEE1;
+    --superficie: #E8ECEE;
+    --branco: #FFFFFF;
+    --grafite: #26343D;
+    --texto-secundario: #56636B;
+    --laranja: #D97736;
+    --laranja-escuro: #B95F27;
+    --borda: #B7C1C6;
+}
+
+
+/* =========================================================
+   2. RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--sm-texto);
+    background: var(--sm-fundo);
+}
+
+
+/* =========================================================
+   3. ELEMENTOS GERAIS
+========================================================= */
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    max-width: 100%;
+}
+
+
+/* =========================================================
+   4. PÁGINAS DE AUTENTICAÇÃO
+   Login, cadastro e recuperação de senha
+========================================================= */
+
+body.pagina-autenticacao {
+    min-height: 100vh;
+    padding: 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background:
+        radial-gradient(
+            circle at 15% 15%,
+            rgba(255, 255, 255, 0.28),
+            transparent 38%
+        ),
+        radial-gradient(
+            circle at 85% 85%,
+            rgba(116, 139, 151, 0.12),
+            transparent 42%
+        ),
+        linear-gradient(
+            135deg,
+            var(--fundo),
+            var(--fundo-secundario)
+        );
+
+    color: var(--grafite);
+}
+
+body.pagina-autenticacao h1 {
+    color: var(--grafite);
+    font-size: 30px;
+    text-align: center;
+}
+
+body.pagina-autenticacao label {
+    display: block;
+    margin-top: 10px;
+    color: var(--grafite);
+}
+
+
+/* =========================================================
+   5. CARTÕES DE AUTENTICAÇÃO
+========================================================= */
+
+.login-card,
+.cadastro-card,
+.recuperacao-card {
+    width: 360px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 30px;
+
+    background: rgba(242, 246, 248, 0.32);
+
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 20px;
+
+    box-shadow:
+        0 12px 35px rgba(38, 52, 61, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+
+/* =========================================================
+   6. BOTÃO DE LOGIN
+========================================================= */
+
+.bnt-login {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    margin: 20px auto 0;
+    padding: 10px;
+
+    color: var(--branco);
+    background-color: var(--laranja);
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.bnt-login:hover {
+    background-color: var(--laranja-escuro);
+    box-shadow: 0 4px 12px rgba(185, 95, 39, 0.18);
+    transform: translateY(-1px);
+}
+
+.bnt-login:active {
+    transform: translateY(0);
+}
+
+.bnt-login:focus-visible {
+    outline: 2px solid var(--grafite);
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   7. LINKS DE RECUPERAÇÃO
+========================================================= */
+
+.links-recuperacao {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.links-recuperacao a {
+    color: var(--grafite);
+    font-size: 13px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.links-recuperacao a:hover {
+    color: var(--laranja-escuro);
+}
+
+
+/* =========================================================
+   8. LOGOS
+========================================================= */
+
+.logo {
+    display: block;
+    width: 100px;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto 15px;
+
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(38, 52, 61, 0.10);
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    margin: 0 auto 20px;
+}
+
+.logo-glass {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 80px;
+    height: 80px;
+    padding: 12px;
+
+    background: rgba(255, 255, 255, 0.15);
+
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.logo-glass img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.logo-glass:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =========================================================
+   9. CAMPO DE RECUPERAÇÃO
+========================================================= */
+
+.input-recuperacao {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px;
+
+    border: 1px solid rgba(86, 99, 107, 0.25);
+    border-radius: 9px;
+
+    background: rgba(248, 250, 251, 0.68);
+    color: var(--grafite);
+    font-size: 14px;
+}
+
+.input-recuperacao::placeholder {
+    color: var(--texto-secundario);
+    opacity: 1;
+}
+
+.input-recuperacao:focus {
+    outline: none;
+    border-color: var(--laranja);
+    box-shadow: 0 0 0 3px rgba(217, 119, 54, 0.15);
+}
+
+
+/* =========================================================
+   10. RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 400px) {
+    .login-card,
+    .cadastro-card,
+    .recuperacao-card {
+        padding: 22px;
+    }
+}
+
+@media (max-height: 600px) {
+    body.pagina-autenticacao {
+        align-items: flex-start;
+    }
+}
+
+
+/* =========================================================
+   11. ACESSIBILIDADE
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

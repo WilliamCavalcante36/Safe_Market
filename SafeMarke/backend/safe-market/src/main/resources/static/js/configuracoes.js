@@ -1,0 +1,5 @@
+"use strict";
+const formularioConfiguracoes=document.getElementById('form-configuracoes');
+const mensagemConfiguracoes=document.getElementById('mensagem-configuracoes');
+(async()=>{try{const d=await requisicaoAPI('/configuracoes');document.getElementById('notificacoes').checked=!!d.notificacoes;document.getElementById('alertas-seguranca').checked=!!d.alertasSeguranca;document.getElementById('alertas-fraude').checked=!!d.alertasFraude;}catch(e){mensagemConfiguracoes.textContent=e.message;}})();
+formularioConfiguracoes.addEventListener('submit',async(e)=>{e.preventDefault();const botao=formularioConfiguracoes.querySelector('button[type="submit"]');botao.disabled=true;try{await requisicaoAPI('/configuracoes',{method:'PUT',body:JSON.stringify({notificacoes:document.getElementById('notificacoes').checked,alertasSeguranca:document.getElementById('alertas-seguranca').checked,alertasFraude:document.getElementById('alertas-fraude').checked})});mensagemConfiguracoes.textContent='Preferências salvas.';}catch(err){mensagemConfiguracoes.textContent=err.message;}finally{botao.disabled=false;}});

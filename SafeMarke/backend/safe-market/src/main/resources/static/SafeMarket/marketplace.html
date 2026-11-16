@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SafeMarket - Marketplace</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/marketplace.css">
+</head>
+
+<body class="pagina-marketplace">
+
+    <div class="marketplace-layout">
+
+        <!-- CABEÇALHO -->
+        <header class="market-header">
+
+            <a href="marketplace.html" class="market-logo">
+                <img src="../imagem/logo.png" alt="Logo SafeMarket">
+                <span>SafeMarket</span>
+            </a>
+
+            <nav class="market-nav" aria-label="Navegação principal">
+
+                <a href="marketplace.html" class="nav-ativo">
+                    Marketplace
+                </a>
+
+                <a href="#categorias">
+                    Categorias
+                </a>
+
+                <a href="#anuncios">
+                    Explorar produtos
+                </a>
+
+            </nav>
+
+            <div class="market-acoes">
+
+                <a href="publicar.html" class="botao-publicar">
+                    + Publicar anúncio
+                </a>
+
+                <button
+                    type="button"
+                    class="botao-perfil"
+                    aria-label="Abrir perfil do usuário">
+
+                    <span>U</span>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="market-main">
+
+            <!-- APRESENTAÇÃO -->
+            <section class="market-hero">
+
+                <div class="hero-conteudo">
+
+                    <span class="hero-etiqueta">
+                        NEGOCIE COM MAIS CONFIANÇA
+                    </span>
+
+                    <h1>
+                        Encontre o que você procura.
+                        <span>Negocie com segurança.</span>
+                    </h1>
+
+                    <p>
+                        Descubra produtos, encontre oportunidades
+                        e negocie em um ambiente desenvolvido
+                        para proporcionar mais segurança.
+                    </p>
+
+                </div>
+
+                <div class="hero-selo">
+
+                    <div class="selo-icone">✓</div>
+
+                    <div>
+                        <strong>SafeMarket</strong>
+                        <span>Mais segurança nas negociações</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- PESQUISA -->
+            <section class="market-pesquisa">
+
+                <form id="form-pesquisa">
+
+                    <label for="pesquisa-produto">
+                        Pesquisar mercadorias
+                    </label>
+
+                    <div class="pesquisa-campo">
+
+                        <input
+                            type="search"
+                            id="pesquisa-produto"
+                            name="pesquisa"
+                            placeholder="O que você está procurando?"
+                            autocomplete="off">
+
+                        <button type="submit">
+                            Pesquisar
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+            <!-- CATEGORIAS -->
+            <section class="market-categorias" id="categorias">
+
+                <div class="secao-cabecalho">
+
+                    <div>
+                        <h2>Categorias</h2>
+                        <p>Explore produtos por categoria.</p>
+                    </div>
+
+                </div>
+
+                <div class="categorias-lista">
+
+                    <button
+                        type="button"
+                        class="categoria-item ativo"
+                        data-categoria="todos">
+
+                        <span>▦</span> Todos
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="categoria-item"
+                        data-categoria="eletronicos">
+
+                        <span>▣</span> Eletrônicos
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="categoria-item"
+                        data-categoria="informatica">
+
+                        <span>⌨</span> Informática
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="categoria-item"
+                        data-categoria="celulares">
+
+                        <span>▯</span> Celulares
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="categoria-item"
+                        data-categoria="moveis">
+
+                        <span>▤</span> Móveis
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="categoria-item"
+                        data-categoria="roupas">
+
+                        <span>◇</span> Roupas
+
+                    </button>
+
+                    <button
+                        type="button"
+                        class="categoria-item"
+                        data-categoria="outros">
+
+                        <span>＋</span> Outros
+
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ANÚNCIOS -->
+            <section class="market-anuncios" id="anuncios">
+
+                <div class="secao-cabecalho">
+
+                    <div>
+
+                        <h2>Produtos disponíveis</h2>
+
+                        <p id="texto-resultados">
+                            Confira os anúncios publicados.
+                        </p>
+
+                    </div>
+
+                    <select
+                        id="ordenacao"
+                        aria-label="Ordenar produtos">
+
+                        <option value="recentes">
+                            Mais recentes
+                        </option>
+
+                        <option value="menor-preco">
+                            Menor preço
+                        </option>
+
+                        <option value="maior-preco">
+                            Maior preço
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- CARREGAMENTO -->
+                <div
+                    class="market-loading"
+                    id="carregando"
+                    hidden>
+
+                    Carregando anúncios...
+
+                </div>
+
+
+                <!-- MENSAGEM DE ERRO -->
+                <div
+                    class="market-mensagem-erro"
+                    id="mensagem-erro"
+                    hidden>
+
+                </div>
+
+
+                <!-- LISTA DE PRODUTOS -->
+                <div
+                    class="produtos-grid"
+                    id="lista-produtos">
+
+                </div>
+
+
+                <!-- ESTADO VAZIO -->
+                <div
+                    class="estado-vazio"
+                    id="estado-vazio">
+
+                    <div class="vazio-icone">⌕</div>
+
+                    <h3>
+                        Nenhum anúncio disponível ainda
+                    </h3>
+
+                    <p>
+                        Seja o primeiro a publicar uma mercadoria
+                        no Marketplace do SafeMarket.
+                    </p>
+
+                    <a href="publicar.html">
+                        Publicar meu primeiro anúncio
+                    </a>
+
+                </div>
+
+            </section>
+
+        </main>
+
+
+        <!-- RODAPÉ -->
+        <footer class="market-footer">
+
+            <div>
+
+                <strong>SafeMarket</strong>
+
+                <p>
+                    Um ambiente desenvolvido para negociações
+                    mais seguras.
+                </p>
+
+            </div>
+
+            <span>
+                © 2026 SafeMarket. Todos os direitos reservados.
+            </span>
+
+        </footer>
+
+    </div>
+<script src="../js/api.js"></script>
+<script src="../js/marketplace.js"></script>
+
+
+
+<a href="carrinho.html" style="position:fixed;right:16px;bottom:16px;z-index:9999;background:#175b45;color:white;padding:12px;border-radius:8px">Meu carrinho / Pedidos</a>
+</body>
+
+</html>
