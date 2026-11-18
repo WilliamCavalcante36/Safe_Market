@@ -22,10 +22,8 @@
 
 <body>
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <main class="pagina-publicar">
 
-        <!-- TÍTULO DA PÁGINA -->
         <header class="cabecalho-publicar">
 
             <a
@@ -53,8 +51,6 @@
 
         </header>
 
-
-        <!-- FORMULÁRIO -->
         <section class="formulario-publicar">
 
             <div class="cabecalho-formulario">
@@ -72,7 +68,6 @@
                 </span>
 
             </div>
-
 
             <form
                 id="form-publicar-anuncio"
@@ -94,7 +89,7 @@
                         name="titulo"
                         placeholder="Ex: Smartphone Samsung Galaxy S24"
                         minlength="5"
-                        maxlength="100"
+                        maxlength="120"
                         autocomplete="off"
                         required
                     >
@@ -104,7 +99,6 @@
                     </small>
 
                 </div>
-
 
                 <!-- DESCRIÇÃO -->
                 <div class="campo-formulario">
@@ -119,7 +113,7 @@
                         name="descricao"
                         placeholder="Descreva as características, estado de conservação e informações importantes do produto..."
                         minlength="15"
-                        maxlength="2000"
+                        maxlength="1000"
                         rows="6"
                         required
                     ></textarea>
@@ -131,13 +125,12 @@
                         </small>
 
                         <small id="contador-descricao">
-                            0/2000
+                            0/1000
                         </small>
 
                     </div>
 
                 </div>
-
 
                 <!-- CATEGORIA -->
                 <div class="campo-formulario">
@@ -165,12 +158,50 @@
                         <option value="eletrodomesticos">Eletrodomésticos</option>
                         <option value="moda">Moda e acessórios</option>
                         <option value="esportes">Esportes e lazer</option>
-                        <option value="outros">Outros</option>
+
+                        <option value="__nova_categoria__">
+                            + Criar nova categoria
+                        </option>
 
                     </select>
 
-                </div>
+                    <!-- NOVA CATEGORIA -->
+                    <div
+                        id="container-nova-categoria"
+                        hidden
+                    >
 
+                        <label for="nova-categoria">
+                            Nome da nova categoria
+                            <span aria-hidden="true">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nova-categoria"
+                            name="nova_categoria"
+                            maxlength="80"
+                            placeholder="Ex: Animais, Instrumentos musicais..."
+                            autocomplete="off"
+                            aria-describedby="ajuda-nova-categoria"
+                        >
+
+                        <div class="informacao-campo">
+
+                            <small id="ajuda-nova-categoria">
+                                A categoria ficará disponível para todos
+                                após a publicação do anúncio.
+                            </small>
+
+                            <small id="contador-nova-categoria">
+                                0/80
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
 
                 <!-- PREÇO -->
                 <div class="campo-formulario">
@@ -200,6 +231,34 @@
 
                 </div>
 
+                <!-- ESTOQUE -->
+                <div class="campo-formulario">
+
+                    <label for="estoque">
+                        Quantidade disponível em estoque
+                        <span aria-hidden="true">*</span>
+                    </label>
+
+                    <input
+                        type="number"
+                        id="estoque"
+                        name="estoque"
+                        min="0"
+                        max="999999"
+                        step="1"
+                        value="1"
+                        placeholder="Ex: 10"
+                        inputmode="numeric"
+                        required
+                    >
+
+                    <small>
+                        Informe quantas unidades deste produto estão disponíveis.
+                        Essa quantidade será exibida no anúncio e deverá ser
+                        atualizada conforme as movimentações de estoque.
+                    </small>
+
+                </div>
 
                 <!-- LOCALIZAÇÃO -->
                 <div class="campo-formulario">
@@ -213,7 +272,7 @@
                         id="localizacao"
                         name="localizacao"
                         placeholder="Ex: Ceilândia - Brasília/DF"
-                        maxlength="150"
+                        maxlength="160"
                         autocomplete="address-level2"
                     >
 
@@ -223,7 +282,6 @@
                     </small>
 
                 </div>
-
 
                 <!-- IMAGEM -->
                 <div class="campo-formulario">
@@ -295,7 +353,6 @@
 
                         </div>
 
-
                         <!-- PRÉ-VISUALIZAÇÃO -->
                         <div
                             id="preview-imagem"
@@ -324,7 +381,6 @@
 
                 </div>
 
-
                 <!-- MENSAGEM -->
                 <div
                     id="mensagem-publicacao"
@@ -333,7 +389,6 @@
                     aria-live="polite"
                     hidden
                 ></div>
-
 
                 <!-- AVISO DE SEGURANÇA -->
                 <div class="aviso-seguranca">
@@ -355,7 +410,6 @@
 
                 </div>
 
-
                 <!-- AÇÕES -->
                 <div class="acoes-publicacao">
 
@@ -375,8 +429,7 @@
 
                 </div>
 
-
-                <!-- TERMO DE RESPONSABILIDADE -->
+                <!-- TERMO -->
                 <p class="rodape-formulario">
                     Ao publicar, você declara que as informações
                     fornecidas são verdadeiras e que possui

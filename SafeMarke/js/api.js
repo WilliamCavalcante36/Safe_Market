@@ -38,13 +38,10 @@ async function obterCsrf(forcarAtualizacao = false) {
 
         resposta = await fetch(`${API_URL}/auth/csrf`, {
             method: "GET",
-
             credentials: "include",
-
             headers: {
                 Accept: "application/json"
             },
-
             cache: "no-store"
         });
 
@@ -59,27 +56,22 @@ async function obterCsrf(forcarAtualizacao = false) {
     }
 
     if (!resposta.ok) {
-
         throw new Error(
             `Falha ao obter CSRF. HTTP ${resposta.status}.`
         );
-
     }
 
     const dados = await resposta.json();
 
     if (!dados || !dados.token) {
-
         throw new Error(
             "O servidor não retornou um token CSRF válido."
         );
-
     }
 
     csrfTokenCache = dados.token;
 
     return csrfTokenCache;
-
 }
 
 
@@ -100,7 +92,64 @@ function exigeCSRF(metodo) {
 
 
 // =====================================================
-// 4. INTERPRETAR RESPOSTA DO SERVIDOR
+// 4. PREPARAR CORPO DA REQUISIÇÃO
+// =====================================================
+
+function prepararCorpo(body) {
+
+    if (
+        body === undefined ||
+        body === null
+    ) {
+        return body;
+    }
+
+    // FormData deve ser enviado diretamente.
+    if (
+        typeof FormData !== "undefined" &&
+        body instanceof FormData
+    ) {
+        return body;
+    }
+
+    // Tipos que o fetch já sabe enviar diretamente.
+    if (
+        typeof body === "string" ||
+        (typeof Blob !== "undefined" && body instanceof Blob) ||
+        (typeof ArrayBuffer !== "undefined" && body instanceof ArrayBuffer) ||
+        (typeof URLSearchParams !== "undefined" && body instanceof URLSearchParams) ||
+        (typeof ReadableStream !== "undefined" && body instanceof ReadableStream) ||
+        ArrayBuffer.isView(body)
+    ) {
+        return body;
+    }
+
+    // Objetos e arrays precisam ser serializados.
+    if (typeof body === "object") {
+
+        try {
+            return JSON.stringify(body);
+        } catch (erro) {
+
+            console.error(
+                "SafeMarket: erro ao converter dados para JSON.",
+                erro
+            );
+
+            throw new Error(
+                "Não foi possível preparar os dados para envio."
+            );
+
+        }
+
+    }
+
+    return body;
+}
+
+
+// =====================================================
+// 5. INTERPRETAR RESPOSTA DO SERVIDOR
 // =====================================================
 
 async function interpretarResposta(resposta) {
@@ -118,15 +167,11 @@ async function interpretarResposta(resposta) {
     if (tipoConteudo.includes("json")) {
 
         try {
-
             return await resposta.json();
-
         } catch {
-
             throw new Error(
                 "O servidor retornou uma resposta JSON inválida."
             );
-
         }
 
     }
@@ -134,12 +179,11 @@ async function interpretarResposta(resposta) {
     const texto = await resposta.text();
 
     return texto || null;
-
 }
 
 
 // =====================================================
-// 5. TRATAR ERROS HTTP
+// 6. TRATAR ERROS HTTP
 // =====================================================
 
 function criarErroAPI(resposta, dados) {
@@ -147,17 +191,11 @@ function criarErroAPI(resposta, dados) {
     const mensagensHTTP = {
 
         400: "Os dados enviados são inválidos. Confira os campos.",
-
         401: "Sua sessão expirou ou você não está autenticado.",
-
         403: "Acesso negado. Verifique suas permissões.",
-
         404: "A rota ou o recurso solicitado não foi encontrado.",
-
         409: "Não foi possível concluir a operação devido a um conflito.",
-
         413: "O arquivo enviado ultrapassa o tamanho permitido.",
-
         429: "Muitas requisições. Aguarde um momento e tente novamente."
 
     };
@@ -167,10 +205,8 @@ function criarErroAPI(resposta, dados) {
         `Erro na requisição: HTTP ${resposta.status}.`;
 
     if (resposta.status >= 500) {
-
         mensagemErro =
             "Ocorreu um erro interno no servidor.";
-
     }
 
     if (
@@ -197,16 +233,14 @@ function criarErroAPI(resposta, dados) {
     const erro = new Error(mensagemErro);
 
     erro.status = resposta.status;
-
     erro.dados = dados;
 
     return erro;
-
 }
 
 
 // =====================================================
-// 6. REQUISIÇÕES À API
+// 7. REQUISIÇÕES À API
 // =====================================================
 
 async function requisicaoAPI(endpoint, opcoes = {}) {
@@ -233,7 +267,7 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
 
 
     // -----------------------------------------------
-    // 6.1. PREPARAR ENDPOINT
+    // 7.1. PREPARAR ENDPOINT
     // -----------------------------------------------
 
     const caminho = endpoint.startsWith("/")
@@ -244,7 +278,7 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
 
 
     // -----------------------------------------------
-    // 6.2. PREPARAR CABEÇALHOS
+    // 7.2. PREPARAR CABEÇALHOS
     // -----------------------------------------------
 
     const headers = new Headers(
@@ -252,13 +286,16 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
     );
 
     if (!headers.has("Accept")) {
-
         headers.set(
             "Accept",
             "application/json"
         );
-
     }
+
+
+    // -----------------------------------------------
+    // 7.3. PREPARAR CORPO
+    // -----------------------------------------------
 
     const corpoExiste =
         opcoesFetch.body !== undefined &&
@@ -267,6 +304,10 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
     const ehFormData =
         typeof FormData !== "undefined" &&
         opcoesFetch.body instanceof FormData;
+
+    const corpoPreparado = prepararCorpo(
+        opcoesFetch.body
+    );
 
     if (
         corpoExiste &&
@@ -283,7 +324,7 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
 
 
     // -----------------------------------------------
-    // 6.3. OBTER TOKEN CSRF
+    // 7.4. OBTER TOKEN CSRF
     // -----------------------------------------------
 
     if (exigeCSRF(metodo)) {
@@ -299,7 +340,7 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
 
 
     // -----------------------------------------------
-    // 6.4. EXECUTAR REQUISIÇÃO
+    // 7.5. EXECUTAR REQUISIÇÃO
     // -----------------------------------------------
 
     let resposta;
@@ -313,6 +354,8 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
             method: metodo,
 
             headers,
+
+            body: corpoPreparado,
 
             credentials: "include",
 
@@ -335,14 +378,14 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
 
 
     // -----------------------------------------------
-    // 6.5. INTERPRETAR RESPOSTA
+    // 7.6. INTERPRETAR RESPOSTA
     // -----------------------------------------------
 
     const dados = await interpretarResposta(resposta);
 
 
     // -----------------------------------------------
-    // 6.6. ATUALIZAR CSRF APÓS LOGIN OU LOGOUT
+    // 7.7. ATUALIZAR CSRF APÓS LOGIN OU LOGOUT
     // -----------------------------------------------
 
     if (
@@ -356,7 +399,7 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
 
 
     // -----------------------------------------------
-    // 6.7. RENOVAR CSRF SE NECESSÁRIO
+    // 7.8. RENOVAR CSRF SE NECESSÁRIO
     // -----------------------------------------------
 
     if (
@@ -400,7 +443,7 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
 
 
     // -----------------------------------------------
-    // 6.8. VERIFICAR ERROS
+    // 7.9. VERIFICAR ERROS
     // -----------------------------------------------
 
     if (!resposta.ok) {
@@ -414,7 +457,7 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
 
 
     // -----------------------------------------------
-    // 6.9. RETORNAR DADOS
+    // 7.10. RETORNAR DADOS
     // -----------------------------------------------
 
     return dados;
@@ -423,7 +466,7 @@ async function requisicaoAPI(endpoint, opcoes = {}) {
 
 
 // =====================================================
-// 7. DISPONIBILIZAR FUNÇÕES
+// 8. DISPONIBILIZAR FUNÇÕES
 // =====================================================
 
 window.requisicaoAPI = requisicaoAPI;
@@ -432,7 +475,7 @@ window.obterCsrf = obterCsrf;
 
 
 // =====================================================
-// 8. CONFIRMAÇÃO DE CARREGAMENTO
+// 9. CONFIRMAÇÃO DE CARREGAMENTO
 // =====================================================
 
 console.log(

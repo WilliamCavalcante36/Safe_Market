@@ -1,0 +1,28 @@
+SAFEMARKET UNIFICADO - 18/11/2026
+
+BASE: SafeMarket-Windows11-corrigido-final - Copia.zip
+MELHORIAS: SafeMarketSegundoRepositorio
+
+INTEGRADO:
+- Todas as alteracoes de HTML/CSS/JS do segundo repositorio (incluindo novas telas de anuncios).
+- Arquivos sincronizados em src/main/resources/static para aparecerem no Render.
+- Backend alterado: controllers, DTO, repositories, OperacoesService e teste correspondente.
+- HomeController redireciona / para marketplace.html.
+- Usuario preenche datas por callbacks JPA antes de inserir/atualizar.
+- H2 demo inclui tabela logs_sistema com campos de auditoria do segundo repositorio.
+- Migration MySQL separada em database/04_auditoria_unificada_mysql.sql.
+
+PRESERVADO:
+- Dockerfile, pom.xml com H2, application.properties e application-demo.properties.
+- Rotas de login, cadastro, arquivos originais e demais servicos.
+
+LIMITACOES IMPORTANTES:
+- Nao foi possivel executar build Maven nem testes HTTP no ambiente de integracao.
+- O schema H2 de demonstracao so cria a tabela logs_sistema; outras tabelas JDBC usadas
+  por compras, estoque, carrinho e denuncias podem exigir scripts adicionais.
+- O arquivo de migration MySQL requer verificacao das colunas ja existentes antes de executar.
+- Nunca copie este ZIP por cima do repositorio publicado sem backup.
+- Render Free + H2 em memoria perde dados a cada reinicio.
+
+PASSO RAPIDO: extrair ZIP, entrar em SafeMarke/backend/safe-market e rodar
+mvnw.cmd clean test (Windows CMD com Java 21), depois testar localmente com perfil demo.

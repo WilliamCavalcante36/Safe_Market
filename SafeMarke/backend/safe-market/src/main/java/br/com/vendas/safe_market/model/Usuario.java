@@ -37,11 +37,23 @@ public class Usuario {
     @Column(name = "atualizado_por")
     private Long atualizadoPor;
 
-    @Column(name = "criado_em", nullable = false, insertable = false, updatable = false)
+    @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
-    @Column(name = "atualizado_em", nullable = false, insertable = false, updatable = false)
+    @Column(name = "atualizado_em", nullable = false)
     private LocalDateTime atualizadoEm;
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime agora = LocalDateTime.now();
+        if (criadoEm == null) criadoEm = agora;
+        atualizadoEm = agora;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        atualizadoEm = LocalDateTime.now();
+    }
+
     public Long getId() { return id; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }

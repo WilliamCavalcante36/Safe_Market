@@ -160,3 +160,168 @@ a {
         transition-duration: 0.01ms !important;
     }
 }
+/* ==========================================
+   GERENCIAMENTO DE ANÚNCIOS
+========================================== */
+
+.gerenciamento-anuncios {
+    margin-top: 30px;
+    padding: 26px;
+    background: #ffffff;
+    border: 1px solid #e5e9f0;
+    border-radius: 14px;
+}
+
+.gerenciamento-anuncios .cabecalho-secao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.botao-atualizar-anuncios,
+.botao-excluir-anuncio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.botao-atualizar-anuncios {
+    color: #1e3a8a;
+    background: #eff6ff;
+}
+
+.botao-atualizar-anuncios:hover {
+    background: #dbeafe;
+}
+
+.botao-excluir-anuncio {
+    color: #ffffff;
+    background: #dc2626;
+}
+
+.botao-excluir-anuncio:hover {
+    background: #b91c1c;
+}
+
+.botao-atualizar-anuncios:disabled,
+.botao-excluir-anuncio:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.anuncios-resumo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 22px 0;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border-radius: 9px;
+    color: #475569;
+}
+
+.anuncios-resumo strong {
+    color: #172554;
+    font-size: 1.25rem;
+}
+
+.lista-anuncios-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.anuncio-admin-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.anuncio-admin-informacoes {
+    min-width: 0;
+}
+
+.anuncio-admin-id {
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.anuncio-admin-card h3 {
+    margin: 7px 0;
+    color: #172554;
+    font-size: 1rem;
+}
+
+.anuncio-admin-descricao {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+.anuncio-admin-detalhes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    color: #475569;
+    font-size: 0.85rem;
+}
+
+.anuncio-admin-acoes {
+    flex-shrink: 0;
+}
+
+.anuncios-vazio {
+    padding: 35px 20px;
+    text-align: center;
+    color: #64748b;
+}
+
+.anuncios-vazio h3 {
+    margin: 12px 0 6px;
+    color: #334155;
+}
+
+.mensagem-anuncios-admin {
+    margin-top: 14px;
+    font-size: 0.9rem;
+}
+
+.mensagem-anuncios-admin[data-tipo="erro"] {
+    color: #b91c1c;
+}
+
+.mensagem-anuncios-admin[data-tipo="sucesso"] {
+    color: #15803d;
+}
+
+@media (max-width: 650px) {
+    .gerenciamento-anuncios {
+        padding: 18px;
+    }
+
+    .anuncio-admin-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .anuncio-admin-acoes,
+    .botao-excluir-anuncio {
+        width: 100%;
+    }
+}

@@ -6,6 +6,7 @@
    FUNCIONALIDADES:
    - Carregamento de produtos pela API
    - Identificação do usuário autenticado
+   - Controle de acesso ao link Meus anúncios
    - Pesquisa de produtos
    - Filtros por categoria
    - Ordenação
@@ -14,6 +15,7 @@
    - Adição ao carrinho
    - Atualização do mini carrinho existente
    - Denúncias de anúncios
+   - Exclusão de anúncios pelo proprietário ou administrador
    - Notificações
    - Estados de carregamento, erro e vazio
 
@@ -71,6 +73,8 @@
     let carregandoCarrinho = false;
     let enviandoDenuncia = false;
 
+    const produtosExcluindo = new Set();
+
     let notificacaoTimer = null;
 
     /* ======================================================
@@ -97,6 +101,13 @@
         carregando: $("carregando"),
         mensagemErro: $("mensagem-erro"),
         estadoVazio: $("estado-vazio"),
+
+        // Localiza o link pelo ID ou pelo endereço.
+linkMeusAnuncios:
+    $("link-meus-anuncios") ||
+    document.querySelector(
+        '.market-nav a[href="meus-anuncios.html"]'
+    ),
 
         menuCarrinho: $("menu-carrinho"),
         contadorCarrinho: $("contador-carrinho"),
@@ -360,6 +371,25 @@
        06. USUÁRIO AUTENTICADO
     ====================================================== */
 
+    function atualizarAcessoMeusAnuncios() {
+        const link = elementos.linkMeusAnuncios;
+
+        if (!link) {
+            return;
+        }
+
+        const autenticado = Boolean(usuarioAtual);
+
+        link.hidden = !autenticado;
+
+        link.setAttribute(
+            "aria-hidden",
+            String(!autenticado)
+        );
+
+        link.tabIndex = autenticado ? 0 : -1;
+    }
+
     async function carregarUsuarioAtual() {
         if (carregandoUsuario) {
             return usuarioAtual;
@@ -381,6 +411,8 @@
 
             window.usuarioMarketplace = usuarioAtual;
 
+            atualizarAcessoMeusAnuncios();
+
             return usuarioAtual;
 
         } catch (erro) {
@@ -392,6 +424,9 @@
             usuarioAtual = null;
 
             window.usuarioMarketplace = null;
+
+            // Se a API não confirmar a sessão, o link permanece oculto.
+            atualizarAcessoMeusAnuncios();
 
             return null;
 
@@ -416,6 +451,7 @@
 
         const idCriador =
             produto.criadoPor?.id ??
+            produto.criadoPor ??
             produto.usuario?.id ??
             produto.vendedor?.id ??
             produto.usuarioId ??
@@ -427,6 +463,51 @@
         }
 
         return String(idUsuario) === String(idCriador);
+    }
+
+    function usuarioEhAdministrador() {
+        if (!usuarioAtual) {
+            return false;
+        }
+
+        const perfil = normalizarTexto(
+            usuarioAtual.perfil ||
+            usuarioAtual.tipo ||
+            usuarioAtual.role ||
+            usuarioAtual.papel ||
+            ""
+        );
+
+        if ([
+            "admin",
+            "administrador",
+            "role_admin"
+        ].includes(perfil)) {
+            return true;
+        }
+
+        const autoridades =
+            usuarioAtual.authorities ||
+            usuarioAtual.autoridades ||
+            [];
+
+        return Array.isArray(autoridades) &&
+            autoridades.some(autoridade => {
+                const valor = typeof autoridade === "object"
+                    ? autoridade.authority ||
+                      autoridade.nome ||
+                      autoridade.name
+                    : autoridade;
+
+                return [
+                    "role_admin",
+                    "admin"
+                ].includes(normalizarTexto(valor));
+            });
+    }
+
+    function usuarioPodeExcluir(produto) {
+        return usuarioEhAdministrador() || usuarioEhDono(produto);
     }
 
     /* ======================================================
@@ -873,7 +954,6 @@
                     type="button"
                     class="botao-adicionar-carrinho"
                     data-adicionar-carrinho="${idSeguro}">
-                    <span aria-hidden="true">🛒</span>
                     Adicionar ao carrinho
                 </button>
             `
@@ -897,6 +977,19 @@
                     Denunciar anúncio
                 </button>
             `;
+
+        const botaoExcluir =
+            id != null && usuarioPodeExcluir(produto)
+                ? `
+                    <button
+                        type="button"
+                        class="produto-excluir"
+                        data-excluir-produto="${idSeguro}"
+                        aria-label="Excluir anúncio de ${nomeSeguro}">
+                        Excluir anúncio
+                    </button>
+                `
+                : "";
 
         return `
             <article
@@ -955,6 +1048,7 @@
                 <div class="produto-acoes">
                     ${botaoCarrinho}
                     ${botaoDenuncia}
+                    ${botaoExcluir}
                 </div>
 
             </article>
@@ -1104,7 +1198,6 @@
 
     /* ======================================================
        16. MINI CARRINHO
-       Utiliza somente os elementos do HTML existente.
     ====================================================== */
 
     function normalizarItemCarrinho(item) {
@@ -1645,7 +1738,112 @@
     }
 
     /* ======================================================
-       19. EVENTOS DOS PRODUTOS
+       19. EXCLUSÃO DE ANÚNCIOS
+    ====================================================== */
+
+    async function excluirProduto(id, botao = null) {
+        if (id == null || String(id).trim() === "") {
+            exibirNotificacao(
+                "Não foi possível identificar o anúncio.",
+                "erro"
+            );
+
+            return;
+        }
+
+        const produto = produtos.find(item =>
+            String(obterIdProduto(item)) === String(id)
+        );
+
+        if (!produto) {
+            exibirNotificacao(
+                "O anúncio não foi encontrado na listagem.",
+                "erro"
+            );
+
+            return;
+        }
+
+        if (!usuarioPodeExcluir(produto)) {
+            exibirNotificacao(
+                "Você não tem permissão para excluir este anúncio.",
+                "erro"
+            );
+
+            return;
+        }
+
+        if (produtosExcluindo.has(String(id))) {
+            return;
+        }
+
+        const nomeProduto = obterNomeProduto(produto);
+
+        const confirmou = window.confirm(
+            `Tem certeza de que deseja excluir o anúncio "${nomeProduto}"?\n\nEssa ação não poderá ser desfeita.`
+        );
+
+        if (!confirmou) {
+            return;
+        }
+
+        produtosExcluindo.add(String(id));
+
+        const textoOriginal = botao?.textContent;
+
+        if (botao) {
+            botao.disabled = true;
+            botao.textContent = "Excluindo...";
+        }
+
+        try {
+            await requisicao(
+                `${ENDPOINT_PRODUTOS}/${encodeURIComponent(id)}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            produtos = produtos.filter(item =>
+                String(obterIdProduto(item)) !== String(id)
+            );
+
+            produtosFiltrados = produtosFiltrados.filter(item =>
+                String(obterIdProduto(item)) !== String(id)
+            );
+
+            aplicarFiltros();
+
+            exibirNotificacao(
+                "Anúncio excluído com sucesso!",
+                "sucesso"
+            );
+
+        } catch (erro) {
+            console.error(
+                "Erro ao excluir anúncio:",
+                erro
+            );
+
+            exibirNotificacao(
+                erro?.message ||
+                "Não foi possível excluir o anúncio. Verifique se ele possui histórico de movimentações ou pedidos.",
+                "erro"
+            );
+
+        } finally {
+            produtosExcluindo.delete(String(id));
+
+            if (botao && botao.isConnected) {
+                botao.disabled = false;
+                botao.textContent =
+                    textoOriginal || "Excluir anúncio";
+            }
+        }
+    }
+
+    /* ======================================================
+       20. EVENTOS DOS PRODUTOS
     ====================================================== */
 
     function configurarEventosProdutos() {
@@ -1683,12 +1881,30 @@
                 abrirModalDenuncia(
                     botaoDenuncia.dataset.denunciarProduto
                 );
+
+                return;
+            }
+
+            const botaoExcluir = evento.target.closest(
+                "[data-excluir-produto]"
+            );
+
+            if (botaoExcluir) {
+                evento.preventDefault();
+                evento.stopPropagation();
+
+                excluirProduto(
+                    botaoExcluir.dataset.excluirProduto,
+                    botaoExcluir
+                );
+
+                return;
             }
         });
     }
 
     /* ======================================================
-       20. EVENTOS DA PESQUISA E ORDENAÇÃO
+       21. EVENTOS DA PESQUISA E ORDENAÇÃO
     ====================================================== */
 
     function configurarEventosFiltros() {
@@ -1714,7 +1930,7 @@
     }
 
     /* ======================================================
-       21. ATUALIZAÇÃO GERAL
+       22. ATUALIZAÇÃO GERAL
     ====================================================== */
 
     async function atualizarMarketplace() {
@@ -1723,10 +1939,13 @@
     }
 
     /* ======================================================
-       22. INICIALIZAÇÃO
+       23. INICIALIZAÇÃO
     ====================================================== */
 
     async function inicializarMarketplace() {
+        // O link começa oculto até a API confirmar a sessão.
+        atualizarAcessoMeusAnuncios();
+
         configurarEventosProdutos();
         configurarEventosFiltros();
         configurarMiniCarrinho();
@@ -1736,13 +1955,11 @@
             carregarProdutos()
         ]);
 
-        // Atualiza os cards após a identificação do usuário,
-        // especialmente para ocultar a denúncia dos próprios anúncios.
         renderizarProdutos();
     }
 
     /* ======================================================
-       23. FUNÇÕES PÚBLICAS
+       24. FUNÇÕES PÚBLICAS
     ====================================================== */
 
     window.atualizarMarketplace = atualizarMarketplace;
@@ -1751,9 +1968,10 @@
     window.adicionarAoCarrinho = adicionarAoCarrinho;
     window.abrirModalDenuncia = abrirModalDenuncia;
     window.abrirProduto = abrirProduto;
+    window.excluirProdutoMarketplace = excluirProduto;
 
     /* ======================================================
-       24. INICIAR
+       25. INICIAR
     ====================================================== */
 
     if (document.readyState === "loading") {

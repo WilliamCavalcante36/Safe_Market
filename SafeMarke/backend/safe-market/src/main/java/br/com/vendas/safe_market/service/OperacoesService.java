@@ -17,6 +17,7 @@ import java.security.Principal;
 import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class OperacoesService {
@@ -91,11 +92,11 @@ public class OperacoesService {
     // ==========================================
 
     /**
-     * Mantém compatibilidade com os serviços
-     * que já utilizam o método log() antigo.
+     * Mantém compatibilidade com os métodos antigos.
      *
-     * Registros sem requisição HTTP ficam
-     * com IP de origem nulo.
+     * Como não recebe uma requisição HTTP,
+     * não consegue identificar IP, endpoint,
+     * método HTTP ou navegador.
      */
     public void log(
             Long uid,
@@ -110,17 +111,20 @@ public class OperacoesService {
                 entidade,
                 eid,
                 detalhes,
+                null,
+                "SUCESSO",
+                null,
                 null
         );
     }
 
     // ==========================================
-    // AUDITORIA — COM IP DE ORIGEM
+    // AUDITORIA — COM REQUISIÇÃO HTTP
     // ==========================================
 
     /**
-     * Permite registrar o IP de origem
-     * da requisição HTTP.
+     * Registra a operação com os dados disponíveis
+     * na requisição HTTP.
      */
     public void log(
             Long uid,
@@ -130,19 +134,51 @@ public class OperacoesService {
             String detalhes,
             HttpServletRequest request) {
 
-        String ip = null;
-
-        if (request != null) {
-            ip = request.getRemoteAddr();
-        }
-
         registrarLog(
                 uid,
                 acao,
                 entidade,
                 eid,
                 detalhes,
-                ip
+                request,
+                "SUCESSO",
+                null,
+                null
+        );
+    }
+
+    // ==========================================
+    // AUDITORIA — DADOS ESTRUTURADOS
+    // ==========================================
+
+    /**
+     * Registra informações estruturadas em JSON.
+     *
+     * Exemplo:
+     *
+     * {
+     *   "precoAnterior": 2900.00,
+     *   "precoNovo": 2500.00
+     * }
+     */
+    public void logDetalhado(
+            Long uid,
+            String acao,
+            String entidade,
+            Long eid,
+            Map<String, Object> dados,
+            HttpServletRequest request) {
+
+        registrarLog(
+                uid,
+                acao,
+                entidade,
+                eid,
+                null,
+                request,
+                "SUCESSO",
+                null,
+                dados
         );
     }
 
@@ -153,45 +189,48 @@ public class OperacoesService {
     /**
      * Registra tentativas de autenticação recusadas.
      *
-     * Identifica o usuário pelo e-mail informado,
-     * quando ele existe no banco de dados.
+     * Quando o e-mail existe, identifica o usuário.
+     * Quando não existe, preserva o e-mail informado.
      *
-     * Para e-mails inexistentes, usuario_id
-     * e entidade_id permanecem nulos.
-     *
-     * A senha nunca é armazenada.
+     * Nunca registra senha, hash ou token.
      */
     public void registrarFalhaLogin(
             String email,
             HttpServletRequest request) {
 
+        String identificador = email == null
+                ? ""
+                : email.trim().toLowerCase(Locale.ROOT);
+
         Long usuarioId = null;
 
-        String identificador = email == null
-                ? "não informado"
-                : email.trim();
+        Usuario usuarioEncontrado = null;
 
-        // Identifica o usuário quando o e-mail existe.
         if (!identificador.isBlank()) {
 
-            usuarioId = usuarios.findByEmail(identificador)
-                    .map(Usuario::getId)
+            usuarioEncontrado = usuarios.findByEmail(identificador)
                     .orElse(null);
+
+            if (usuarioEncontrado != null) {
+                usuarioId = usuarioEncontrado.getId();
+            }
         }
 
-        String detalhes =
-                "Tentativa de login malsucedida. "
-                + "E-mail informado: "
-                + identificador;
+        Map<String, Object> dados = new LinkedHashMap<>();
 
-        // Reutiliza o registro centralizado de auditoria.
-        log(
+        dados.put("tipo", "TENTATIVA_LOGIN");
+        dados.put("emailInformado", identificador);
+
+        registrarLog(
                 usuarioId,
                 "LOGIN_FALHA",
                 "USUARIO",
                 usuarioId,
-                detalhes,
-                request
+                "Tentativa de login malsucedida",
+                request,
+                "FALHA",
+                identificador,
+                dados
         );
     }
 
@@ -199,20 +238,104 @@ public class OperacoesService {
     // REGISTRO CENTRALIZADO DE AUDITORIA
     // ==========================================
 
+    /**
+     * Centraliza a gravação dos registros de auditoria.
+     *
+     * Preserva a identificação histórica do usuário
+     * e os dados disponíveis da requisição.
+     */
     private void registrarLog(
             Long uid,
             String acao,
             String entidade,
             Long eid,
             String detalhes,
-            String ip) {
+            HttpServletRequest request,
+            String resultado,
+            String emailFallback,
+            Map<String, Object> dados) {
 
-        String json = objectMapper.createObjectNode()
-                .put(
-                        "mensagem",
-                        detalhes == null ? "" : detalhes
-                )
-                .toString();
+        Usuario responsavel = null;
+
+        if (uid != null) {
+            responsavel = usuarios.findById(uid).orElse(null);
+        }
+
+        // --------------------------------------
+        // MONTAGEM DOS DETALHES EM JSON
+        // --------------------------------------
+
+        ObjectNode json = objectMapper.createObjectNode();
+
+        if (detalhes != null) {
+            json.put("mensagem", detalhes);
+        }
+
+        if (dados != null && !dados.isEmpty()) {
+            json.set(
+                    "dados",
+                    objectMapper.valueToTree(dados)
+            );
+        }
+
+        // --------------------------------------
+        // IDENTIFICAÇÃO HISTÓRICA DO RESPONSÁVEL
+        // --------------------------------------
+
+        String nomeSnapshot = responsavel == null
+                ? null
+                : responsavel.getNome();
+
+        String emailSnapshot = responsavel == null
+                ? emailFallback
+                : responsavel.getEmail();
+
+        String perfilSnapshot = responsavel == null
+                ? null
+                : responsavel.getPerfil() == null
+                    ? null
+                    : responsavel.getPerfil().name();
+
+        // --------------------------------------
+        // DADOS DA REQUISIÇÃO
+        // --------------------------------------
+
+        String ip = null;
+        String metodo = null;
+        String endpoint = null;
+        String userAgent = null;
+
+        String origem;
+
+        if (request != null) {
+
+            ip = request.getRemoteAddr();
+
+            metodo = limitar(
+                    request.getMethod(),
+                    10
+            );
+
+            endpoint = limitar(
+                    request.getRequestURI(),
+                    255
+            );
+
+            userAgent = limitar(
+                    request.getHeader("User-Agent"),
+                    500
+            );
+
+            origem = "API";
+
+        } else {
+
+            origem = "SISTEMA";
+        }
+
+        // --------------------------------------
+        // GRAVAÇÃO NO BANCO
+        // --------------------------------------
 
         db.update(
                 """
@@ -222,17 +345,155 @@ public class OperacoesService {
                     entidade,
                     entidade_id,
                     detalhes,
-                    ip_origem
+                    ip_origem,
+                    usuario_nome_snapshot,
+                    usuario_email_snapshot,
+                    usuario_perfil_snapshot,
+                    metodo_http,
+                    endpoint,
+                    user_agent,
+                    origem,
+                    resultado
                 )
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 uid,
                 acao,
                 entidade,
                 eid,
-                json,
-                ip
+                json.toString(),
+                ip,
+                limitar(nomeSnapshot, 120),
+                limitar(emailSnapshot, 180),
+                limitar(perfilSnapshot, 30),
+                metodo,
+                endpoint,
+                userAgent,
+                origem,
+                resultado
         );
+    }
+
+    // ==========================================
+    // LIMITAR TAMANHO DOS CAMPOS
+    // ==========================================
+
+    private String limitar(
+            String valor,
+            int tamanho) {
+
+        if (valor == null) {
+            return null;
+        }
+
+        String limpo = valor.trim();
+
+        if (limpo.isEmpty()) {
+            return null;
+        }
+
+        return limpo.length() > tamanho
+                ? limpo.substring(0, tamanho)
+                : limpo;
+    }
+
+    // ==========================================
+    // CONSULTAR EXCLUSÕES DE ANÚNCIOS
+    // ==========================================
+
+    /**
+     * Recupera os registros de exclusão lógica dos anúncios.
+     *
+     * Consulta os registros de auditoria existentes,
+     * sem gerar novos logs ou alterar o histórico.
+     *
+     * Recupera:
+     * - ID do registro de auditoria;
+     * - ID do produto;
+     * - Data e hora da exclusão;
+     * - ID de quem realizou a exclusão;
+     * - Nome, e-mail e perfil do responsável;
+     * - IP, método HTTP e endpoint.
+     *
+     * Quando existem vários registros de exclusão
+     * para o mesmo produto, considera o mais recente.
+     */
+    public Map<Long, Map<String, Object>> buscarExclusoesProdutos(
+            Collection<Long> produtoIds) {
+
+        Map<Long, Map<String, Object>> resultado =
+                new LinkedHashMap<>();
+
+        if (produtoIds == null || produtoIds.isEmpty()) {
+            return resultado;
+        }
+
+        List<Long> idsValidos = produtoIds.stream()
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        if (idsValidos.isEmpty()) {
+            return resultado;
+        }
+
+        String marcadores = String.join(
+                ",",
+                Collections.nCopies(idsValidos.size(), "?")
+        );
+
+        String sql = """
+                SELECT
+                    id AS logExclusaoId,
+                    entidade_id AS produtoId,
+                    criado_em AS excluidoEm,
+                    usuario_id AS excluidoPor,
+                    usuario_nome_snapshot AS nomeResponsavelExclusao,
+                    usuario_email_snapshot AS emailResponsavelExclusao,
+                    usuario_perfil_snapshot AS perfilResponsavelExclusao,
+                    ip_origem AS ipExclusao,
+                    metodo_http AS metodoExclusao,
+                    endpoint AS endpointExclusao
+                FROM logs_sistema
+                WHERE acao = 'EXCLUIR'
+                  AND entidade = 'PRODUTO'
+                  AND entidade_id IN (%s)
+                  AND JSON_UNQUOTE(
+                      JSON_EXTRACT(
+                          detalhes,
+                          '$.dados.evento'
+                      )
+                  ) = 'PRODUTO_EXCLUIDO'
+                ORDER BY criado_em DESC, id DESC
+                """.formatted(marcadores);
+
+        List<Map<String, Object>> registros =
+                db.queryForList(
+                        sql,
+                        idsValidos.toArray()
+                );
+
+        for (Map<String, Object> registro : registros) {
+
+            Object valorId = registro.get("produtoId");
+
+            if (!(valorId instanceof Number)) {
+                continue;
+            }
+
+            Long produtoId = ((Number) valorId).longValue();
+
+            // A consulta está ordenada do mais recente
+            // para o mais antigo.
+            // Mantém somente a exclusão mais recente.
+
+            resultado.putIfAbsent(
+                    produtoId,
+                    new LinkedHashMap<>(registro)
+            );
+        }
+
+        return resultado;
     }
 
     // ==========================================
@@ -551,6 +812,9 @@ public class OperacoesService {
 
         // Registrar itens e movimentações de estoque.
 
+        List<Map<String, Object>> resumoItens =
+                new ArrayList<>();
+
         for (Map<String, Object> item : itens) {
 
             Long pid = ((Number)
@@ -620,6 +884,16 @@ public class OperacoesService {
                     antes - qtd,
                     "Pedido #" + pedidoId
             );
+
+            Map<String, Object> resumo = new LinkedHashMap<>();
+
+            resumo.put("produtoId", pid);
+            resumo.put("quantidade", qtd);
+            resumo.put("precoUnitario", preco);
+            resumo.put("estoqueAnterior", antes);
+            resumo.put("estoqueNovo", antes - qtd);
+
+            resumoItens.add(resumo);
         }
 
         // Limpar carrinho.
@@ -632,14 +906,23 @@ public class OperacoesService {
                 u.getId()
         );
 
-        // Registrar auditoria.
+        // Registrar auditoria do pedido.
 
-        log(
+        Map<String, Object> dadosPedido =
+                new LinkedHashMap<>();
+
+        dadosPedido.put("pedidoId", pedidoId);
+        dadosPedido.put("total", total);
+        dadosPedido.put("status", "CONFIRMADO");
+        dadosPedido.put("itens", resumoItens);
+
+        logDetalhado(
                 u.getId(),
                 "CADASTRAR",
                 "PEDIDO",
                 pedidoId,
-                "Pedido confirmado"
+                dadosPedido,
+                null
         );
 
         return db.queryForMap(

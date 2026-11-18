@@ -7,34 +7,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta name="description"
-        content="Gerenciamento, classificação e acompanhamento de alertas de segurança do SafeMarket.">
+        content="Central administrativa de alertas de segurança do SafeMarket.">
 
     <meta name="theme-color" content="#111B3A">
 
     <title>SafeMarket | Alertas</title>
 
-    <!-- =====================================================
-         ESTILIZAÇÃO
-    ====================================================== -->
-
+    <!-- ESTILOS -->
     <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="stylesheet" href="../css/menu.css">
     <link rel="stylesheet" href="../css/alertas.css">
 
-    <!-- =====================================================
-         ÍCONES
-    ====================================================== -->
-
+    <!-- ÍCONES -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- =====================================================
-         JAVASCRIPT
-    ====================================================== -->
-
+    <!-- SCRIPTS -->
     <script src="../js/api.js" defer></script>
     <script src="../js/menu.js" defer></script>
     <script src="../js/alertas.js" defer></script>
-
 </head>
 
 <body>
@@ -45,140 +35,80 @@
 
     <aside class="menu-lateral" id="menu-lateral">
 
-        <!-- CABEÇALHO DO MENU -->
-
         <div class="menu-topo">
 
-            <h2 class="logo-menu">SafeMarket</h2>
+            <div class="logo-menu">
+                <img
+                    src="../assets/logo-safemarket.png"
+                    alt="SafeMarket"
+                    onerror="this.style.display='none';"
+                >
+
+                <span>SafeMarket</span>
+            </div>
 
             <button
                 type="button"
                 class="botao-menu"
                 id="alternar-menu"
-                aria-label="Recolher menu"
-                aria-expanded="true"
-                aria-controls="menu-navegacao"
-                title="Recolher menu">
-
-                <i
-                    data-lucide="panel-left-close"
-                    aria-hidden="true">
-                </i>
-
+                aria-label="Recolher ou expandir menu"
+                title="Recolher ou expandir menu"
+            >
+                <i data-lucide="panel-left-close"></i>
             </button>
 
         </div>
 
-
-        <!-- NAVEGAÇÃO PRINCIPAL -->
-
         <nav id="menu-navegacao" aria-label="Menu principal">
 
-            <!-- 1. DASHBOARD -->
-
             <a href="dashboard.html" title="Dashboard">
-
-                <i
-                    data-lucide="layout-dashboard"
-                    aria-hidden="true">
-                </i>
-
+                <i data-lucide="layout-dashboard"></i>
                 <span>Dashboard</span>
-
             </a>
-
-
-            <!-- 2. USUÁRIOS -->
 
             <a href="usuarios.html" title="Usuários">
-
-                <i
-                    data-lucide="users"
-                    aria-hidden="true">
-                </i>
-
+                <i data-lucide="users"></i>
                 <span>Usuários</span>
-
             </a>
 
-
-            <!-- 3. AUDITORIA E LOGS -->
+            <a href="anuncios.html" title="Gerenciamento de anúncios">
+                <i data-lucide="package"></i>
+                <span>Gerenciamento de anúncios</span>
+            </a>
 
             <a href="auditoria.html" title="Auditoria e Logs">
-
-                <i
-                    data-lucide="clipboard-list"
-                    aria-hidden="true">
-                </i>
-
+                <i data-lucide="clipboard-list"></i>
                 <span>Auditoria e Logs</span>
-
             </a>
-
-
-            <!-- 4. MONITORAMENTO -->
 
             <a href="monitoramento.html" title="Monitoramento">
-
-                <i
-                    data-lucide="activity"
-                    aria-hidden="true">
-                </i>
-
+                <i data-lucide="activity"></i>
                 <span>Monitoramento</span>
-
             </a>
-
-
-            <!-- 5. ALERTAS -->
 
             <a
                 href="alertas.html"
                 class="ativo"
                 aria-current="page"
-                title="Alertas">
-
-                <i
-                    data-lucide="bell"
-                    aria-hidden="true">
-                </i>
-
+                title="Alertas"
+            >
+                <i data-lucide="bell"></i>
                 <span>Alertas</span>
-
             </a>
-
-
-            <!-- 6. PERÍCIA DIGITAL -->
 
             <a href="pericia.html" title="Perícia Digital">
-
-                <i
-                    data-lucide="shield-search"
-                    aria-hidden="true">
-                </i>
-
+                <i data-lucide="shield-search"></i>
                 <span>Perícia Digital</span>
-
             </a>
 
-
-            <!-- 7. CONFIGURAÇÕES -->
-
             <a href="configuracoes.html" title="Configurações">
-
-                <i
-                    data-lucide="settings"
-                    aria-hidden="true">
-                </i>
-
+                <i data-lucide="settings"></i>
                 <span>Configurações</span>
-
             </a>
 
         </nav>
 
     </aside>
-
 
     <!-- =====================================================
          CONTEÚDO PRINCIPAL
@@ -186,34 +116,23 @@
 
     <main class="conteudo">
 
-        <!-- =================================================
-             CABEÇALHO DA PÁGINA
-        ================================================== -->
+        <!-- CABEÇALHO -->
 
         <header class="cabecalho-pagina">
 
             <div>
-
                 <h1>
-
-                    <i
-                        data-lucide="shield-alert"
-                        aria-hidden="true">
-                    </i>
-
-                    Alertas
-
+                    <i data-lucide="bell-ring"></i>
+                    Central de Alertas
                 </h1>
 
                 <p class="descricao-pagina">
-                    Gerencie, classifique e acompanhe os alertas
-                    de segurança registrados na plataforma.
+                    Gerencie, classifique e acompanhe os alertas de segurança
+                    registrados na plataforma SafeMarket.
                 </p>
-
             </div>
 
         </header>
-
 
         <!-- =================================================
              INDICADORES
@@ -221,143 +140,97 @@
 
         <section
             class="indicadores-alertas"
-            aria-label="Indicadores de alertas">
+            aria-label="Indicadores de alertas"
+        >
 
-            <!-- TOTAL DE ALERTAS -->
+            <!-- TOTAL -->
 
             <article class="card-indicador">
 
                 <div class="indicador-icone total">
-
-                    <i
-                        data-lucide="bell"
-                        aria-hidden="true">
-                    </i>
-
+                    <i data-lucide="bell"></i>
                 </div>
 
                 <div class="indicador-informacoes">
-
                     <span>Total de alertas</span>
-
-                    <strong id="total-alertas">--</strong>
-
+                    <strong id="total-alertas">0</strong>
                 </div>
 
             </article>
 
-
-            <!-- ALERTAS CRÍTICOS -->
+            <!-- CRÍTICOS -->
 
             <article class="card-indicador">
 
                 <div class="indicador-icone critico">
-
-                    <i
-                        data-lucide="shield-alert"
-                        aria-hidden="true">
-                    </i>
-
+                    <i data-lucide="shield-alert"></i>
                 </div>
 
                 <div class="indicador-informacoes">
-
-                    <span>Críticos</span>
-
-                    <strong id="alertas-criticos">--</strong>
-
+                    <span>Alertas críticos</span>
+                    <strong id="alertas-criticos">0</strong>
                 </div>
 
             </article>
 
-
-            <!-- ALERTAS PENDENTES -->
+            <!-- PENDENTES -->
 
             <article class="card-indicador">
 
                 <div class="indicador-icone pendente">
-
-                    <i
-                        data-lucide="clock"
-                        aria-hidden="true">
-                    </i>
-
+                    <i data-lucide="clock-3"></i>
                 </div>
 
                 <div class="indicador-informacoes">
-
                     <span>Pendentes</span>
-
-                    <strong id="alertas-pendentes">--</strong>
-
+                    <strong id="alertas-pendentes">0</strong>
                 </div>
 
             </article>
 
-
-            <!-- ALERTAS RESOLVIDOS -->
+            <!-- RESOLVIDOS -->
 
             <article class="card-indicador">
 
                 <div class="indicador-icone resolvido">
-
-                    <i
-                        data-lucide="check-circle"
-                        aria-hidden="true">
-                    </i>
-
+                    <i data-lucide="check-circle"></i>
                 </div>
 
                 <div class="indicador-informacoes">
-
                     <span>Resolvidos</span>
-
-                    <strong id="alertas-resolvidos">--</strong>
-
+                    <strong id="alertas-resolvidos">0</strong>
                 </div>
 
             </article>
 
         </section>
 
-
         <!-- =================================================
              FILTROS
         ================================================== -->
 
-        <section
-            class="filtros-alertas"
-            aria-labelledby="titulo-filtros">
+        <section class="filtros-alertas">
 
             <div class="secao-cabecalho">
 
                 <div>
-
-                    <h2 id="titulo-filtros">
-
-                        <i
-                            data-lucide="filter"
-                            aria-hidden="true">
-                        </i>
-
+                    <h2>
+                        <i data-lucide="filter"></i>
                         Filtrar alertas
-
                     </h2>
 
                     <p>
-                        Pesquise e refine os registros de segurança.
+                        Utilize os filtros para localizar ocorrências específicas.
                     </p>
-
                 </div>
 
             </div>
-
 
             <div class="filtros-conteudo">
 
                 <!-- PESQUISA -->
 
-                <div class="campo-filtro pesquisa-alertas">
+                <div class="campo-filtro">
 
                     <label for="pesquisa-alertas">
                         Pesquisar
@@ -365,21 +238,18 @@
 
                     <div class="campo-com-icone">
 
-                        <i
-                            data-lucide="search"
-                            aria-hidden="true">
-                        </i>
+                        <i data-lucide="search"></i>
 
                         <input
                             type="search"
                             id="pesquisa-alertas"
-                            placeholder="Pesquisar alertas..."
-                            autocomplete="off">
+                            placeholder="Descrição, tipo ou identificação..."
+                            autocomplete="off"
+                        >
 
                     </div>
 
                 </div>
-
 
                 <!-- GRAVIDADE -->
 
@@ -419,7 +289,6 @@
 
                 </div>
 
-
                 <!-- STATUS -->
 
                 <div class="campo-filtro">
@@ -450,18 +319,18 @@
 
                 </div>
 
-
                 <!-- DATA -->
 
                 <div class="campo-filtro">
 
                     <label for="filtro-data">
-                        Data
+                        Data do alerta
                     </label>
 
                     <input
                         type="date"
-                        id="filtro-data">
+                        id="filtro-data"
+                    >
 
                 </div>
 
@@ -469,102 +338,75 @@
 
         </section>
 
-
         <!-- =================================================
-             HISTÓRICO DE ALERTAS
+             HISTÓRICO
         ================================================== -->
 
-        <section
-            class="historico-alertas"
-            aria-labelledby="titulo-historico">
+        <section class="historico-alertas">
 
             <div class="secao-cabecalho">
 
                 <div>
-
-                    <h2 id="titulo-historico">
-
-                        <i
-                            data-lucide="history"
-                            aria-hidden="true">
-                        </i>
-
+                    <h2>
+                        <i data-lucide="history"></i>
                         Histórico de alertas
-
                     </h2>
 
                     <p>
-                        Acompanhe os eventos de segurança registrados.
+                        Acompanhe os registros de segurança identificados pelo sistema.
                     </p>
-
                 </div>
 
-
-                <!-- QUANTIDADE DE REGISTROS -->
-
                 <span
+                    class="quantidade-registros"
                     id="quantidade-alertas"
-                    class="quantidade-registros">
-
+                    aria-live="polite"
+                >
                     0 registros
-
                 </span>
 
             </div>
 
-
-            <!-- LISTA DINÂMICA DE ALERTAS -->
+            <!-- LISTA DINÂMICA -->
 
             <div
-                id="lista-alertas"
                 class="lista-alertas"
+                id="lista-alertas"
                 aria-live="polite"
-                aria-busy="true">
+                aria-busy="true"
+            >
 
                 <div class="estado-carregamento">
-
-                    <i
-                        data-lucide="loader-circle"
-                        aria-hidden="true">
-                    </i>
-
+                    <i data-lucide="loader-circle"></i>
                     <p>Carregando alertas...</p>
-
                 </div>
 
             </div>
 
-
-            <!-- MENSAGENS DO SISTEMA -->
+            <!-- MENSAGENS -->
 
             <p
-                id="mensagem-alertas"
                 class="mensagem-alertas"
+                id="mensagem-alertas"
                 role="status"
-                aria-live="polite">
-            </p>
+                aria-live="polite"
+            ></p>
 
         </section>
 
     </main>
-
 
     <!-- =====================================================
          INICIALIZAÇÃO DOS ÍCONES
     ====================================================== -->
 
     <script>
-
-        document.addEventListener("DOMContentLoaded", () => {
-
+        document.addEventListener("DOMContentLoaded", function () {
             if (window.lucide) {
                 window.lucide.createIcons();
             }
-
         });
-
     </script>
 
 </body>
-
 </html>

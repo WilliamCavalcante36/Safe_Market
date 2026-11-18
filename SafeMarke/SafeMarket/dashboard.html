@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <meta name="description"
-        content="SafeMarket Administração: gerenciamento de usuários, auditoria, monitoramento e segurança da plataforma.">
+        content="SafeMarket Administração: gerenciamento de usuários, anúncios, auditoria, monitoramento e segurança da plataforma.">
 
     <meta name="theme-color" content="#111B3A">
 
@@ -33,14 +33,12 @@
 
 </head>
 
-
 <body>
 
     <!-- ACESSIBILIDADE -->
     <a href="#conteudo-principal" class="pular-conteudo">
         Pular para o conteúdo principal
     </a>
-
 
     <!-- =========================================
          MENU LATERAL ADMINISTRATIVO
@@ -67,72 +65,77 @@
 
         </div>
 
+        <nav id="menu-navegacao" aria-label="Administração">
 
-<nav id="menu-navegacao" aria-label="Administração">
+            <!-- 1. DASHBOARD -->
+            <a href="dashboard.html"
+               aria-current="page"
+               title="Dashboard">
 
-    <!-- 1. DASHBOARD -->
-    <a href="dashboard.html"
-       aria-current="page"
-       title="Dashboard">
+                <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                <span>Dashboard</span>
 
-        <i data-lucide="layout-dashboard" aria-hidden="true"></i>
-        <span>Dashboard</span>
+            </a>
 
-    </a>
+            <!-- 2. USUÁRIOS -->
+            <a href="usuarios.html" title="Usuários">
 
-    <!-- 2. USUÁRIOS -->
-    <a href="usuarios.html" title="Usuários">
+                <i data-lucide="users" aria-hidden="true"></i>
+                <span>Usuários</span>
 
-        <i data-lucide="users" aria-hidden="true"></i>
-        <span>Usuários</span>
+            </a>
 
-    </a>
+            <!-- 3. GERENCIAMENTO DE ANÚNCIOS -->
+            <a href="anuncios.html" title="Gerenciamento de anúncios">
 
-    <!-- 3. AUDITORIA -->
-    <a href="auditoria.html" title="Auditoria e Logs">
+                <i data-lucide="package" aria-hidden="true"></i>
+                <span>Gerenciamento de anúncios</span>
 
-        <i data-lucide="clipboard-list" aria-hidden="true"></i>
-        <span>Auditoria e Logs</span>
+            </a>
 
-    </a>
+            <!-- 4. AUDITORIA -->
+            <a href="auditoria.html" title="Auditoria e Logs">
 
-    <!-- 4. MONITORAMENTO -->
-    <a href="monitoramento.html" title="Monitoramento">
+                <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                <span>Auditoria e Logs</span>
 
-        <i data-lucide="activity" aria-hidden="true"></i>
-        <span>Monitoramento</span>
+            </a>
 
-    </a>
+            <!-- 5. MONITORAMENTO -->
+            <a href="monitoramento.html" title="Monitoramento">
 
-    <!-- 5. ALERTAS -->
-    <a href="alertas.html" title="Alertas">
+                <i data-lucide="activity" aria-hidden="true"></i>
+                <span>Monitoramento</span>
 
-        <i data-lucide="shield-alert" aria-hidden="true"></i>
-        <span>Alertas</span>
+            </a>
 
-    </a>
+            <!-- 6. ALERTAS -->
+            <a href="alertas.html" title="Alertas">
 
-    <!-- 6. PERÍCIA DIGITAL -->
-    <a href="pericia.html" title="Perícia Digital">
+                <i data-lucide="shield-alert" aria-hidden="true"></i>
+                <span>Alertas</span>
 
-        <i data-lucide="search" aria-hidden="true"></i>
-        <span>Perícia Digital</span>
+            </a>
 
-    </a>
+            <!-- 7. PERÍCIA DIGITAL -->
+            <a href="pericia.html" title="Perícia Digital">
 
-    <!-- 7. CONFIGURAÇÕES -->
-    <a href="configuracoes.html" title="Configurações">
+                <i data-lucide="search" aria-hidden="true"></i>
+                <span>Perícia Digital</span>
 
-        <i data-lucide="settings" aria-hidden="true"></i>
-        <span>Configurações</span>
+            </a>
 
-    </a>
+            <!-- 8. CONFIGURAÇÕES -->
+            <a href="configuracoes.html" title="Configurações">
 
-</nav>
+                <i data-lucide="settings" aria-hidden="true"></i>
+                <span>Configurações</span>
+
+            </a>
+
+        </nav>
 
     </aside>
-
-
 
     <!-- =========================================
          CONTEÚDO PRINCIPAL
@@ -140,9 +143,7 @@
 
     <main class="conteudo" id="conteudo-principal">
 
-
         <!-- CABEÇALHO -->
-
         <header class="cabecalho-dashboard">
 
             <div class="informacoes-cabecalho">
@@ -160,8 +161,6 @@
             </div>
 
         </header>
-
-
 
         <!-- =========================================
              INDICADORES GERAIS
@@ -187,12 +186,9 @@
 
             </div>
 
-
             <div class="cartoes">
 
-
                 <!-- TOTAL DE USUÁRIOS -->
-
                 <article class="cartao">
 
                     <div class="cabecalho-cartao">
@@ -217,10 +213,7 @@
 
                 </article>
 
-
-
                 <!-- TOTAL DE ANÚNCIOS -->
-
                 <article class="cartao">
 
                     <div class="cabecalho-cartao">
@@ -245,10 +238,7 @@
 
                 </article>
 
-
-
                 <!-- USUÁRIOS ATIVOS -->
-
                 <article class="cartao">
 
                     <div class="cabecalho-cartao">
@@ -273,10 +263,7 @@
 
                 </article>
 
-
-
                 <!-- LOGINS FALHOS -->
-
                 <article class="cartao">
 
                     <div class="cabecalho-cartao">
@@ -301,10 +288,7 @@
 
                 </article>
 
-
-
                 <!-- ALERTAS DE SEGURANÇA -->
-
                 <article class="cartao">
 
                     <div class="cabecalho-cartao">
@@ -333,10 +317,7 @@
 
                 </article>
 
-
-
                 <!-- REGISTROS DE AUDITORIA -->
-
                 <article class="cartao">
 
                     <div class="cabecalho-cartao">
@@ -364,8 +345,6 @@
             </div>
 
         </section>
-
-
 
         <!-- =========================================
              ATIVIDADES RECENTES
@@ -397,7 +376,6 @@
 
                 </div>
 
-
                 <a href="auditoria.html" class="link-secao">
 
                     Consultar auditoria
@@ -411,7 +389,6 @@
 
             </div>
 
-
             <div id="lista-atividades" aria-live="polite">
 
                 <p>Nenhuma atividade carregada.</p>
@@ -419,8 +396,6 @@
             </div>
 
         </section>
-
-
 
         <!-- =========================================
              ÁREAS ADMINISTRATIVAS
@@ -446,12 +421,9 @@
 
             </div>
 
-
             <div class="lista-acessos">
 
-
                 <!-- USUÁRIOS -->
-
                 <a href="usuarios.html" class="item-acesso">
 
                     <i data-lucide="users" aria-hidden="true"></i>
@@ -470,10 +442,26 @@
 
                 </a>
 
+                <!-- GERENCIAMENTO DE ANÚNCIOS -->
+                <a href="anuncios.html" class="item-acesso">
 
+                    <i data-lucide="package" aria-hidden="true"></i>
+
+                    <div>
+
+                        <h3>Gerenciamento de anúncios</h3>
+
+                        <p>
+                            Consultar anúncios publicados e gerenciar sua remoção.
+                        </p>
+
+                    </div>
+
+                    <i data-lucide="chevron-right" aria-hidden="true"></i>
+
+                </a>
 
                 <!-- AUDITORIA -->
-
                 <a href="auditoria.html" class="item-acesso">
 
                     <i data-lucide="clipboard-list" aria-hidden="true"></i>
@@ -492,10 +480,7 @@
 
                 </a>
 
-
-
                 <!-- MONITORAMENTO -->
-
                 <a href="monitoramento.html" class="item-acesso">
 
                     <i data-lucide="activity" aria-hidden="true"></i>
@@ -514,10 +499,7 @@
 
                 </a>
 
-
-
                 <!-- ALERTAS -->
-
                 <a href="alertas.html" class="item-acesso">
 
                     <i data-lucide="shield-alert" aria-hidden="true"></i>
@@ -536,10 +518,7 @@
 
                 </a>
 
-
-
                 <!-- PERÍCIA DIGITAL -->
-
                 <a href="pericia.html" class="item-acesso">
 
                     <i data-lucide="search" aria-hidden="true"></i>
@@ -558,10 +537,7 @@
 
                 </a>
 
-
-
                 <!-- CONFIGURAÇÕES -->
-
                 <a href="configuracoes.html" class="item-acesso">
 
                     <i data-lucide="settings" aria-hidden="true"></i>
@@ -583,8 +559,6 @@
             </div>
 
         </section>
-
-
 
         <!-- =========================================
              STATUS DO SISTEMA
@@ -618,10 +592,7 @@
 
             </div>
 
-
-
             <!-- SERVIDOR -->
-
             <div class="item-status">
 
                 <div class="informacao-status">
@@ -646,10 +617,7 @@
 
             </div>
 
-
-
             <!-- BANCO DE DADOS -->
-
             <div class="item-status">
 
                 <div class="informacao-status">
@@ -674,10 +642,7 @@
 
             </div>
 
-
-
             <!-- MONITORAMENTO -->
-
             <div class="item-status">
 
                 <div class="informacao-status">
@@ -704,8 +669,6 @@
 
         </section>
 
-
-
         <!-- =========================================
              MENSAGENS DO DASHBOARD
         ========================================== -->
@@ -717,8 +680,6 @@
             aria-live="polite"
             aria-atomic="true">
         </div>
-
-
 
         <!-- =========================================
              RODAPÉ
@@ -734,8 +695,6 @@
         </footer>
 
     </main>
-
-
 
     <!-- =========================================
          INICIALIZAÇÃO DOS ÍCONES

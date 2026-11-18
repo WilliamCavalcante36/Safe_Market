@@ -202,6 +202,7 @@ public class GestaoController {
 
     // ==========================================
     // AUDITORIA DO SISTEMA
+    // HISTÓRICO COMPLETO E RASTREABILIDADE
     // ==========================================
 
     @GetMapping("/admin/auditoria")
@@ -212,10 +213,27 @@ public class GestaoController {
 
         return db.queryForList("""
                 SELECT
+
+                    -- IDENTIFICAÇÃO DO REGISTRO
+
                     l.id,
+
                     l.usuario_id AS usuarioId,
+
+                    -- SNAPSHOT DO RESPONSÁVEL
+
+                    l.usuario_nome_snapshot AS usuarioNome,
+
+                    l.usuario_email_snapshot AS usuarioEmail,
+
+                    l.usuario_perfil_snapshot AS usuarioPerfil,
+
+                    -- AÇÃO EXECUTADA
+
                     l.acao,
+
                     l.entidade,
+
                     l.entidade_id AS entidadeId,
 
                     CONCAT(
@@ -226,11 +244,35 @@ public class GestaoController {
                         COALESCE(l.entidade_id, 0)
                     ) AS descricao,
 
+                    -- DETALHES DA OPERAÇÃO
+
+                    l.detalhes,
+
+                    -- INFORMAÇÕES TÉCNICAS
+
+                    l.ip_origem AS ipOrigem,
+
+                    l.metodo_http AS metodoHttp,
+
+                    l.endpoint,
+
+                    l.user_agent AS userAgent,
+
+                    l.origem,
+
+                    -- RESULTADO
+
+                    l.resultado,
+
+                    -- DATA E HORÁRIO
+
                     l.criado_em AS data
 
                 FROM logs_sistema l
 
-                ORDER BY l.id DESC
+                ORDER BY
+                    l.criado_em DESC,
+                    l.id DESC
 
                 LIMIT 100
                 """);
@@ -277,17 +319,31 @@ public class GestaoController {
                     l.usuario_id AS usuarioId,
 
                     COALESCE(
+                        l.usuario_nome_snapshot,
                         u.nome,
                         'Usuário não identificado'
                     ) AS usuarioNome,
 
-                    u.email AS usuarioEmail,
+                    COALESCE(
+                        l.usuario_email_snapshot,
+                        u.email
+                    ) AS usuarioEmail,
+
+                    l.usuario_perfil_snapshot AS usuarioPerfil,
 
                     l.acao,
                     l.entidade,
                     l.entidade_id AS entidadeId,
+
                     l.detalhes,
+
                     l.ip_origem AS ipOrigem,
+                    l.metodo_http AS metodoHttp,
+                    l.endpoint,
+                    l.user_agent AS userAgent,
+                    l.origem,
+                    l.resultado,
+
                     l.criado_em AS data
 
                 FROM logs_sistema l
@@ -555,9 +611,6 @@ public class GestaoController {
                 )
         );
 
-        // Total de alertas das três fontes:
-        // contas bloqueadas, denúncias e moderação.
-
         dados.put(
                 "totalAlertas",
                 contarTotalAlertas()
@@ -568,8 +621,6 @@ public class GestaoController {
                 "Monitorado"
         );
 
-        // Total de registros de auditoria.
-
         dados.put(
                 "totalAuditorias",
                 db.queryForObject(
@@ -577,8 +628,6 @@ public class GestaoController {
                         Integer.class
                 )
         );
-
-        // Total de tentativas de login malsucedidas.
 
         dados.put(
                 "totalLoginsFalhos",
@@ -714,7 +763,7 @@ public class GestaoController {
                 ON DUPLICATE KEY UPDATE
                     notificacoes = VALUES(notificacoes),
                     alertas_seguranca = VALUES(alertas_seguranca),
-                    alertas_fraude = VALUES(alertasFraude)
+                    alertas_fraude = VALUES(alertas_fraude)
                 """,
                 usuarioId,
                 request.notificacoes(),

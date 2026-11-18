@@ -9,13 +9,18 @@
 
    FUNCIONALIDADES:
    - Validação dos campos
+   - Validação da quantidade em estoque
    - Preview de imagens
    - Autenticação por sessão HTTP
    - CSRF centralizado no api.js
    - Cadastro de produtos
+   - Cadastro do estoque inicial
    - Upload multipart de imagens
    - Proteção contra publicação duplicada
    - Recuperação de publicação pendente
+   - Carregamento dinâmico de categorias
+   - Criação de novas categorias
+   - Verificação de categorias duplicadas
 ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -33,7 +38,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const campoTitulo = document.getElementById("titulo");
     const campoDescricao = document.getElementById("descricao");
     const campoCategoria = document.getElementById("categoria");
+    const campoNovaCategoria = document.getElementById("nova-categoria");
+    const containerNovaCategoria = document.getElementById(
+        "container-nova-categoria"
+    );
+
+    const contadorNovaCategoria = document.getElementById(
+        "contador-nova-categoria"
+    );
+
     const campoPreco = document.getElementById("preco");
+    const campoEstoque = document.getElementById("estoque");
     const campoLocalizacao = document.getElementById("localizacao");
     const campoImagem = document.getElementById("imagem");
 
@@ -74,7 +89,10 @@ document.addEventListener("DOMContentLoaded", () => {
         campoTitulo,
         campoDescricao,
         campoCategoria,
+        campoNovaCategoria,
+        containerNovaCategoria,
         campoPreco,
+        campoEstoque,
         campoLocalizacao,
         campoImagem,
         mensagem,
@@ -91,19 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================================
     // 3. INTEGRAÇÃO COM API.JS
     // =====================================================
-
-    /*
-       api.js deve ser carregado antes deste arquivo.
-
-       Ele centraliza:
-       - URL da API;
-       - envio de cookies;
-       - token CSRF;
-       - cabeçalho X-XSRF-TOKEN;
-       - tratamento das respostas e erros.
-
-       Este arquivo não utiliza fetch diretamente.
-    */
 
     const chamarAPI =
         typeof window.requisicaoAPI === "function"
@@ -150,8 +155,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const PRECO_MAXIMO = 99999999.99;
 
+    const ESTOQUE_MINIMO = 0;
+    const ESTOQUE_MAXIMO = 999999;
+
+    const VALOR_NOVA_CATEGORIA = "__nova_categoria__";
+
     const CHAVE_PUBLICACAO_PENDENTE =
         "safemarket_publicacao_pendente";
+
+    const CATEGORIAS_PADRAO = [
+        {
+            valor: "eletronicos",
+            nome: "Eletrônicos"
+        },
+        {
+            valor: "informatica",
+            nome: "Informática"
+        },
+        {
+            valor: "celulares",
+            nome: "Celulares e acessórios"
+        },
+        {
+            valor: "moveis",
+            nome: "Móveis e decoração"
+        },
+        {
+            valor: "veiculos",
+            nome: "Veículos"
+        },
+        {
+            valor: "eletrodomesticos",
+            nome: "Eletrodomésticos"
+        },
+        {
+            valor: "moda",
+            nome: "Moda e acessórios"
+        },
+        {
+            valor: "esportes",
+            nome: "Esportes e lazer"
+        }
+    ];
+
+    let categoriasDisponiveis = [];
 
     let urlImagemAtual = null;
 
@@ -160,7 +207,33 @@ document.addEventListener("DOMContentLoaded", () => {
     let produtoPendenteImagem = recuperarPublicacaoPendente();
 
     // =====================================================
-    // 5. MENSAGENS
+    // 5. NORMALIZAÇÃO DE CATEGORIAS
+    // =====================================================
+
+    function normalizarCategoria(valor) {
+
+        return String(valor || "")
+            .trim()
+            .replace(/\s+/g, " ");
+    }
+
+    function chaveCategoria(valor) {
+
+        return normalizarCategoria(valor)
+            .toLocaleLowerCase("pt-BR");
+    }
+
+    function categoriaJaExiste(valor) {
+
+        const chave = chaveCategoria(valor);
+
+        return categoriasDisponiveis.some(categoria =>
+            chaveCategoria(categoria.valor) === chave
+        );
+    }
+
+    // =====================================================
+    // 6. MENSAGENS
     // =====================================================
 
     function exibirMensagem(texto, tipo = "aviso") {
@@ -183,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 6. VALIDAÇÃO VISUAL
+    // 7. VALIDAÇÃO VISUAL
     // =====================================================
 
     function marcarCampo(campo, invalido) {
@@ -202,7 +275,202 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 7. CONTADOR DE DESCRIÇÃO
+    // 8. CARREGAR CATEGORIAS DO BACKEND
+    // =====================================================
+
+    function adicionarCategoriaDisponivel(valor, nomeExibicao = null) {
+
+        const categoria = normalizarCategoria(valor);
+
+        if (!categoria) return;
+
+        if (categoria.length > TAMANHO_MAXIMO_CATEGORIA) {
+            return;
+        }
+
+        if (categoriaJaExiste(categoria)) {
+            return;
+        }
+
+        categoriasDisponiveis.push({
+
+            valor: categoria,
+
+            nome: nomeExibicao || categoria
+
+        });
+    }
+
+    function atualizarOpcoesCategoria() {
+
+        const valorAnterior = campoCategoria.value;
+
+        campoCategoria.replaceChildren();
+
+        const opcaoInicial = document.createElement("option");
+
+        opcaoInicial.value = "";
+        opcaoInicial.textContent = "Selecione uma categoria";
+
+        campoCategoria.appendChild(opcaoInicial);
+
+        categoriasDisponiveis.forEach(categoria => {
+
+            const opcao = document.createElement("option");
+
+            opcao.value = categoria.valor;
+            opcao.textContent = categoria.nome;
+
+            campoCategoria.appendChild(opcao);
+        });
+
+        const opcaoNova = document.createElement("option");
+
+        opcaoNova.value = VALOR_NOVA_CATEGORIA;
+        opcaoNova.textContent = "+ Criar nova categoria";
+
+        campoCategoria.appendChild(opcaoNova);
+
+        if (
+            valorAnterior &&
+            valorAnterior !== VALOR_NOVA_CATEGORIA &&
+            categoriaJaExiste(valorAnterior)
+        ) {
+
+            campoCategoria.value = valorAnterior;
+
+        } else {
+
+            campoCategoria.value = "";
+        }
+    }
+
+    async function carregarCategorias() {
+
+        categoriasDisponiveis = [];
+
+        // Categorias iniciais mantidas no sistema.
+        CATEGORIAS_PADRAO.forEach(categoria => {
+
+            adicionarCategoriaDisponivel(
+                categoria.valor,
+                categoria.nome
+            );
+
+        });
+
+        try {
+
+            const resposta = await chamarAPI(
+                "/produtos/categorias",
+                {
+                    method: "GET"
+                }
+            );
+
+            if (!Array.isArray(resposta)) {
+
+                console.warn(
+                    "SafeMarket: o servidor não retornou uma lista válida de categorias."
+                );
+
+                atualizarOpcoesCategoria();
+
+                return;
+            }
+
+            resposta.forEach(categoria => {
+
+                if (typeof categoria === "string") {
+
+                    adicionarCategoriaDisponivel(categoria);
+
+                }
+
+            });
+
+            console.log(
+                "SafeMarket: categorias carregadas.",
+                categoriasDisponiveis
+            );
+
+        } catch (erro) {
+
+            console.error(
+                "SafeMarket: não foi possível carregar as categorias do servidor.",
+                erro
+            );
+
+            /*
+               Se a API estiver indisponível, as categorias
+               padrão continuam disponíveis para publicação.
+            */
+
+        }
+
+        atualizarOpcoesCategoria();
+    }
+
+    // =====================================================
+    // 9. CONTROLAR CAMPO DE NOVA CATEGORIA
+    // =====================================================
+
+    function atualizarContadorNovaCategoria() {
+
+        if (!contadorNovaCategoria) return;
+
+        const quantidade = campoNovaCategoria.value.length;
+
+        contadorNovaCategoria.textContent =
+            `${quantidade}/${TAMANHO_MAXIMO_CATEGORIA}`;
+    }
+
+    function atualizarCampoNovaCategoria() {
+
+        const criarNova =
+            campoCategoria.value === VALOR_NOVA_CATEGORIA;
+
+        containerNovaCategoria.hidden = !criarNova;
+
+        campoNovaCategoria.required = criarNova;
+
+        if (!criarNova) {
+
+            campoNovaCategoria.value = "";
+
+            limparValidacao(campoNovaCategoria);
+        }
+
+        atualizarContadorNovaCategoria();
+    }
+
+    campoCategoria.addEventListener("change", () => {
+
+        limparMensagem();
+
+        limparValidacao(campoCategoria);
+
+        atualizarCampoNovaCategoria();
+
+        if (
+            campoCategoria.value === VALOR_NOVA_CATEGORIA
+        ) {
+
+            campoNovaCategoria.focus();
+        }
+    });
+
+    campoNovaCategoria.addEventListener("input", () => {
+
+        limparMensagem();
+
+        limparValidacao(campoNovaCategoria);
+
+        atualizarContadorNovaCategoria();
+    });
+
+    // =====================================================
+    // 10. CONTADOR DE DESCRIÇÃO
     // =====================================================
 
     function atualizarContadorDescricao() {
@@ -224,9 +492,10 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     atualizarContadorDescricao();
+    atualizarContadorNovaCategoria();
 
     // =====================================================
-    // 8. GERENCIAMENTO DE IMAGENS
+    // 11. GERENCIAMENTO DE IMAGENS
     // =====================================================
 
     function liberarUrlImagem() {
@@ -267,7 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 9. VALIDAÇÃO DE IMAGEM
+    // 12. VALIDAÇÃO DE IMAGEM
     // =====================================================
 
     function validarImagem(arquivo) {
@@ -316,7 +585,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 10. SELEÇÃO DE IMAGEM
+    // 13. SELEÇÃO DE IMAGEM
     // =====================================================
 
     campoImagem.addEventListener("change", () => {
@@ -345,7 +614,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =====================================================
-    // 11. REMOVER IMAGEM
+    // 14. REMOVER IMAGEM
     // =====================================================
 
     if (botaoRemoverImagem) {
@@ -371,7 +640,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 12. VALIDAR TÍTULO
+    // 15. VALIDAR TÍTULO
     // =====================================================
 
     function validarTitulo() {
@@ -426,7 +695,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 13. VALIDAR DESCRIÇÃO
+    // 16. VALIDAR DESCRIÇÃO
     // =====================================================
 
     function validarDescricao() {
@@ -481,14 +750,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 14. VALIDAR CATEGORIA
+    // 17. VALIDAR CATEGORIA
     // =====================================================
 
     function validarCategoria() {
 
-        const categoria = campoCategoria.value.trim();
+        const valorSelecionado = campoCategoria.value;
 
-        if (!categoria) {
+        if (!valorSelecionado) {
 
             marcarCampo(campoCategoria, true);
 
@@ -502,27 +771,87 @@ document.addEventListener("DOMContentLoaded", () => {
             return false;
         }
 
-        if (categoria.length > TAMANHO_MAXIMO_CATEGORIA) {
+        // Categoria já existente.
+        if (valorSelecionado !== VALOR_NOVA_CATEGORIA) {
 
-            marcarCampo(campoCategoria, true);
+            const categoria = normalizarCategoria(
+                valorSelecionado
+            );
+
+            if (!categoria || categoria.length > TAMANHO_MAXIMO_CATEGORIA) {
+
+                marcarCampo(campoCategoria, true);
+
+                exibirMensagem(
+                    "Selecione uma categoria válida.",
+                    "erro"
+                );
+
+                campoCategoria.focus();
+
+                return false;
+            }
+
+            limparValidacao(campoCategoria);
+
+            return true;
+        }
+
+        // Categoria personalizada.
+        const novaCategoria = normalizarCategoria(
+            campoNovaCategoria.value
+        );
+
+        if (!novaCategoria) {
+
+            marcarCampo(campoNovaCategoria, true);
 
             exibirMensagem(
-                "A categoria ultrapassou 80 caracteres.",
+                "Digite o nome da nova categoria.",
                 "erro"
             );
 
-            campoCategoria.focus();
+            campoNovaCategoria.focus();
 
             return false;
         }
 
+        if (novaCategoria.length > TAMANHO_MAXIMO_CATEGORIA) {
+
+            marcarCampo(campoNovaCategoria, true);
+
+            exibirMensagem(
+                "A categoria não pode ultrapassar 80 caracteres.",
+                "erro"
+            );
+
+            campoNovaCategoria.focus();
+
+            return false;
+        }
+
+        if (categoriaJaExiste(novaCategoria)) {
+
+            marcarCampo(campoNovaCategoria, true);
+
+            exibirMensagem(
+                "Essa categoria já existe. Selecione a categoria disponível na lista.",
+                "erro"
+            );
+
+            campoNovaCategoria.focus();
+
+            return false;
+        }
+
+        limparValidacao(campoNovaCategoria);
         limparValidacao(campoCategoria);
 
         return true;
     }
 
     // =====================================================
-    // 15. VALIDAR PREÇO
+    // 18. VALIDAR PREÇO
     // =====================================================
 
     function validarPreco() {
@@ -593,14 +922,87 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 16. VALIDAR LOCALIZAÇÃO
+    // 19. VALIDAR ESTOQUE
+    // =====================================================
+
+    function validarEstoque() {
+
+        const estoqueTexto = campoEstoque.value.trim();
+
+        if (!estoqueTexto) {
+
+            marcarCampo(campoEstoque, true);
+
+            exibirMensagem(
+                "Informe a quantidade disponível em estoque.",
+                "erro"
+            );
+
+            campoEstoque.focus();
+
+            return false;
+        }
+
+        if (!/^\d+$/.test(estoqueTexto)) {
+
+            marcarCampo(campoEstoque, true);
+
+            exibirMensagem(
+                "A quantidade em estoque deve ser um número inteiro.",
+                "erro"
+            );
+
+            campoEstoque.focus();
+
+            return false;
+        }
+
+        const estoque = Number(estoqueTexto);
+
+        if (!Number.isSafeInteger(estoque)) {
+
+            marcarCampo(campoEstoque, true);
+
+            exibirMensagem(
+                "Informe uma quantidade válida.",
+                "erro"
+            );
+
+            campoEstoque.focus();
+
+            return false;
+        }
+
+        if (
+            estoque < ESTOQUE_MINIMO ||
+            estoque > ESTOQUE_MAXIMO
+        ) {
+
+            marcarCampo(campoEstoque, true);
+
+            exibirMensagem(
+                "A quantidade deve estar entre 0 e 999.999 unidades.",
+                "erro"
+            );
+
+            campoEstoque.focus();
+
+            return false;
+        }
+
+        limparValidacao(campoEstoque);
+
+        return true;
+    }
+
+    // =====================================================
+    // 20. VALIDAR LOCALIZAÇÃO
     // =====================================================
 
     function validarLocalizacao() {
 
         const localizacao = campoLocalizacao.value.trim();
 
-        // A localização é opcional.
         if (!localizacao) {
 
             limparValidacao(campoLocalizacao);
@@ -628,7 +1030,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 17. VALIDAÇÃO GERAL
+    // 21. VALIDAÇÃO GERAL
     // =====================================================
 
     function validarFormulario() {
@@ -640,6 +1042,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!validarCategoria()) return false;
 
         if (!validarPreco()) return false;
+
+        if (!validarEstoque()) return false;
 
         if (!validarLocalizacao()) return false;
 
@@ -656,10 +1060,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 18. COLETAR DADOS DO ANÚNCIO
+    // 22. COLETAR DADOS DO ANÚNCIO
     // =====================================================
 
     function obterDadosAnuncio() {
+
+        let categoria;
+
+        if (
+            campoCategoria.value === VALOR_NOVA_CATEGORIA
+        ) {
+
+            categoria = normalizarCategoria(
+                campoNovaCategoria.value
+            );
+
+        } else {
+
+            categoria = normalizarCategoria(
+                campoCategoria.value
+            );
+        }
 
         return {
 
@@ -667,9 +1088,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             descricao: campoDescricao.value.trim(),
 
-            categoria: campoCategoria.value.trim(),
+            categoria: categoria,
 
             preco: Number(campoPreco.value),
+
+            estoque: Number(campoEstoque.value),
 
             localizacao: campoLocalizacao.value.trim() || null,
 
@@ -678,19 +1101,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 19. PUBLICAÇÃO PENDENTE
+    // 23. PUBLICAÇÃO PENDENTE
     // =====================================================
-
-    /*
-       Guardamos somente o ID do produto.
-
-       Não precisamos armazenar usuarioId no navegador:
-       o backend verifica o proprietário pelo Principal
-       quando recebe o upload da imagem.
-
-       O arquivo não sobrevive a uma atualização da página.
-       Nesse caso, o usuário seleciona a imagem novamente.
-    */
 
     function recuperarPublicacaoPendente() {
 
@@ -788,7 +1200,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 20. CADASTRAR PRODUTO
+    // 24. CADASTRAR PRODUTO
     // =====================================================
 
     async function cadastrarProduto(dadosAnuncio) {
@@ -814,7 +1226,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     localizacao: dadosAnuncio.localizacao,
 
-                    estoque: 1
+                    estoque: dadosAnuncio.estoque
                 })
             }
         );
@@ -830,7 +1242,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 21. ENVIAR IMAGEM
+    // 25. ENVIAR IMAGEM
     // =====================================================
 
     async function enviarImagem(produtoId, arquivo) {
@@ -846,13 +1258,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         dados.append("imagem", arquivo);
 
-        /*
-           Não configurar Content-Type manualmente.
-
-           O navegador gera o multipart/form-data
-           com o boundary necessário.
-        */
-
         return await chamarAPI(
             `/produtos/${encodeURIComponent(produtoId)}/imagem`,
             {
@@ -863,7 +1268,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 22. FINALIZAR PUBLICAÇÃO
+    // 26. FINALIZAR PUBLICAÇÃO
     // =====================================================
 
     function finalizarPublicacao() {
@@ -873,6 +1278,8 @@ document.addEventListener("DOMContentLoaded", () => {
         formulario.reset();
 
         atualizarContadorDescricao();
+
+        atualizarCampoNovaCategoria();
 
         removerImagem();
 
@@ -892,13 +1299,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 23. PROCESSAR PUBLICAÇÃO
+    // 27. PROCESSAR PUBLICAÇÃO
     // =====================================================
 
     async function processarPublicacao() {
 
         // ---------------------------------------------
-        // ETAPA 1: VERIFICAR PUBLICAÇÃO PENDENTE
+        // ETAPA 1: AGUARDAR CARREGAMENTO DAS CATEGORIAS
+        // ---------------------------------------------
+
+        await carregamentoCategorias;
+
+        // ---------------------------------------------
+        // ETAPA 2: VERIFICAR PUBLICAÇÃO PENDENTE
         // ---------------------------------------------
 
         if (produtoPendenteImagem) {
@@ -929,7 +1342,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
 
             // -----------------------------------------
-            // ETAPA 2: VALIDAR FORMULÁRIO
+            // ETAPA 3: VALIDAR FORMULÁRIO
             // -----------------------------------------
 
             if (!validarFormulario()) return;
@@ -937,7 +1350,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const dadosAnuncio = obterDadosAnuncio();
 
             // -----------------------------------------
-            // ETAPA 3: CADASTRAR PRODUTO
+            // ETAPA 4: CADASTRAR PRODUTO
             // -----------------------------------------
 
             exibirMensagem(
@@ -955,7 +1368,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             // -----------------------------------------
-            // ETAPA 4: PRODUTO SEM IMAGEM
+            // ETAPA 5: PRODUTO SEM IMAGEM
             // -----------------------------------------
 
             if (!dadosAnuncio.imagem) {
@@ -966,7 +1379,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // -----------------------------------------
-            // ETAPA 5: GUARDAR ID PENDENTE
+            // ETAPA 6: GUARDAR ID PENDENTE
             // -----------------------------------------
 
             salvarPublicacaoPendente({
@@ -980,7 +1393,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // ---------------------------------------------
-        // ETAPA 6: ENVIAR IMAGEM
+        // ETAPA 7: ENVIAR IMAGEM
         // ---------------------------------------------
 
         exibirMensagem(
@@ -999,7 +1412,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         // ---------------------------------------------
-        // ETAPA 7: CONCLUIR
+        // ETAPA 8: CONCLUIR
         // ---------------------------------------------
 
         finalizarPublicacao();
@@ -1010,7 +1423,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =====================================================
-    // 24. ENVIAR FORMULÁRIO
+    // 28. ENVIAR FORMULÁRIO
     // =====================================================
 
     formulario.addEventListener(
@@ -1075,7 +1488,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     // =====================================================
-    // 25. LIMPAR MENSAGENS AO EDITAR
+    // 29. LIMPAR MENSAGENS AO EDITAR
     // =====================================================
 
     formulario.addEventListener(
@@ -1111,7 +1524,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     // =====================================================
-    // 26. LIMPEZA DE RECURSOS
+    // 30. LIMPEZA DE RECURSOS
     // =====================================================
 
     window.addEventListener(
@@ -1123,8 +1536,12 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
     // =====================================================
-    // 27. INICIALIZAÇÃO
+    // 31. INICIALIZAÇÃO
     // =====================================================
+
+    atualizarCampoNovaCategoria();
+
+    const carregamentoCategorias = carregarCategorias();
 
     if (produtoPendenteImagem) {
 

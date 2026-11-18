@@ -24,9 +24,7 @@
 
     <div class="marketplace-layout">
 
-        <!-- ==========================================
-             CABEÇALHO
-        =========================================== -->
+        <!-- CABEÇALHO -->
         <header class="market-header">
 
             <!-- LOGOTIPO -->
@@ -42,7 +40,6 @@
 
                 <span>SafeMarket</span>
             </a>
-
 
             <!-- NAVEGAÇÃO PRINCIPAL -->
             <nav
@@ -64,15 +61,21 @@
                 <a href="#anuncios">
                     Explorar produtos
                 </a>
-            </nav>
 
+                <!-- VISÍVEL SOMENTE QUANDO O USUÁRIO ESTIVER AUTENTICADO -->
+                <a
+                    href="meus-anuncios.html"
+                    id="link-meus-anuncios"
+                    hidden
+                >
+                    Meus anúncios
+                </a>
+            </nav>
 
             <!-- AÇÕES PRINCIPAIS -->
             <div class="market-acoes">
 
-                <!-- ==================================
-                     CARRINHO DO CABEÇALHO
-                =================================== -->
+                <!-- CARRINHO DO CABEÇALHO -->
                 <details
                     class="carrinho-menu"
                     id="menu-carrinho"
@@ -105,7 +108,6 @@
 
                     </summary>
 
-
                     <!-- PRÉVIA DO CARRINHO -->
                     <div
                         class="carrinho-dropdown"
@@ -130,7 +132,6 @@
                             </span>
 
                         </div>
-
 
                         <!-- LISTA DINÂMICA DO CARRINHO -->
                         <div
@@ -164,7 +165,6 @@
 
                         </div>
 
-
                         <!-- RESUMO -->
                         <div class="carrinho-dropdown-resumo">
 
@@ -191,7 +191,6 @@
 
                 </details>
 
-
                 <!-- PUBLICAR ANÚNCIO -->
                 <a
                     href="publicar.html"
@@ -204,10 +203,7 @@
 
         </header>
 
-
-        <!-- ==========================================
-             CONTEÚDO PRINCIPAL
-        =========================================== -->
+        <!-- CONTEÚDO PRINCIPAL -->
         <main class="market-main">
 
             <!-- APRESENTAÇÃO -->
@@ -235,7 +231,6 @@
 
                 </div>
 
-
                 <div class="hero-selo">
 
                     <div
@@ -257,10 +252,7 @@
 
             </section>
 
-
-            <!-- ======================================
-                 PESQUISA DE PRODUTOS
-            ======================================= -->
+            <!-- PESQUISA DE PRODUTOS -->
             <section
                 class="market-pesquisa"
                 aria-label="Pesquisa de produtos"
@@ -293,10 +285,7 @@
 
             </section>
 
-
-            <!-- ======================================
-                 CATEGORIAS
-            ======================================= -->
+            <!-- CATEGORIAS -->
             <section
                 class="market-categorias"
                 id="categorias"
@@ -316,7 +305,6 @@
                     </div>
 
                 </div>
-
 
                 <div class="categorias-lista">
 
@@ -394,10 +382,7 @@
 
             </section>
 
-
-            <!-- ======================================
-                 PRODUTOS E ANÚNCIOS
-            ======================================= -->
+            <!-- PRODUTOS E ANÚNCIOS -->
             <section
                 class="market-anuncios"
                 id="anuncios"
@@ -420,7 +405,6 @@
                         </p>
 
                     </div>
-
 
                     <!-- ORDENAÇÃO -->
                     <div class="ordenacao-container">
@@ -450,7 +434,6 @@
 
                 </div>
 
-
                 <!-- CARREGAMENTO -->
                 <div
                     class="market-loading"
@@ -462,7 +445,6 @@
                     Carregando anúncios...
                 </div>
 
-
                 <!-- MENSAGEM DE ERRO -->
                 <div
                     class="market-mensagem-erro"
@@ -473,14 +455,12 @@
                 >
                 </div>
 
-
                 <!-- LISTA DINÂMICA DE PRODUTOS -->
                 <div
                     class="produtos-grid"
                     id="lista-produtos"
                 >
                 </div>
-
 
                 <!-- ESTADO VAZIO -->
                 <div
@@ -514,10 +494,7 @@
 
         </main>
 
-
-        <!-- ==========================================
-             RODAPÉ
-        =========================================== -->
+        <!-- RODAPÉ -->
         <footer class="market-footer">
 
             <div>
@@ -539,11 +516,8 @@
 
     </div>
 
-
-    <!-- ==============================================
-         SCRIPTS
-         api.js deve ser carregado antes de marketplace.js
-    =============================================== -->
+    <!-- SCRIPTS -->
+    <!-- api.js deve ser carregado antes de marketplace.js -->
     <script src="../js/api.js" defer></script>
     <script src="../js/marketplace.js" defer></script>
 
